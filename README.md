@@ -1,10 +1,31 @@
-# Headkey Plugin for Claude Code
+# Savantly Claude Plugins
 
-A Claude Code plugin that connects to the [Headkey Memory API](https://headkey.ai) — giving AI agents persistent memory, beliefs, and knowledge graph capabilities.
+A marketplace of Claude Code plugins by [Savantly](https://github.com/savantly-net).
 
-## What it does
+## Installation
 
-This plugin adds Headkey's MCP tools directly into Claude Code, enabling:
+```bash
+# Add the marketplace (one time)
+claude plugin marketplace add savantly-net/claude-plugins
+```
+
+Then install any plugin:
+
+```bash
+claude plugin install <plugin-name>@savantly
+```
+
+## Available Plugins
+
+### Headkey
+
+Memory layer for AI agents — store, organize, retrieve, and manage memories and beliefs via the [Headkey](https://headkey.ai) API.
+
+```bash
+claude plugin install headkey@savantly
+```
+
+**Features:**
 
 - **Memory management** — ingest, retrieve, search, and forget memories
 - **Belief tracking** — assert beliefs with confidence scores, detect conflicts
@@ -12,30 +33,16 @@ This plugin adds Headkey's MCP tools directly into Claude Code, enabling:
 - **Sensory events** — stream events into short-term memory for async processing
 - **Agent management** — create and configure AI agents with custom memory strategies
 
-## Installation
-
-```bash
-# Add the Savantly marketplace
-claude plugin marketplace add savantly-net/claude-plugins
-
-# Install the plugin
-claude plugin install headkey@savantly
-```
-
-## Configuration
+**Configuration:**
 
 Set the `HEADKEY_API_KEY` environment variable with your API key:
 
-### Option 1: Shell environment
-
 ```bash
-# Add to ~/.zshrc or ~/.bashrc
+# Shell environment
 export HEADKEY_API_KEY="cibfe_your_key_here"
 ```
 
-### Option 2: Claude Code settings
-
-Add to `.claude/settings.json` (project-scoped) or `~/.claude/settings.json` (global):
+Or add to `.claude/settings.json` (project) or `~/.claude/settings.json` (global):
 
 ```json
 {
@@ -45,32 +52,14 @@ Add to `.claude/settings.json` (project-scoped) or `~/.claude/settings.json` (gl
 }
 ```
 
-### Option 3: Setup command
-
-Run `/headkey:setup` inside Claude Code for guided configuration.
-
-## Usage
-
-Once configured, Headkey MCP tools are available automatically. Claude will use them based on context, or you can reference them directly:
-
-```
-Remember that the user prefers TypeScript over JavaScript
-```
-
-```
-What do we know about the authentication system?
-```
-
-```
-List all agents
-```
+Or run `/headkey:setup` inside Claude Code for guided configuration.
 
 ## Development
 
-Test the plugin locally:
+Test a plugin locally:
 
 ```bash
-claude --plugin-dir ./
+claude --plugin-dir ./path-to-plugin
 ```
 
 ## License
