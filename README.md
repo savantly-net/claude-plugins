@@ -24,18 +24,12 @@ claude plugin install headkey@savantly
 
 ## Configuration
 
-Set two environment variables:
-
-| Variable | Description | Default |
-|---|---|---|
-| `HEADKEY_API_URL` | Base URL of the Headkey API | `https://api.headkey.dev` |
-| `HEADKEY_API_KEY` | Your API key (prefix: `cibfe_`) | _(required)_ |
+Set the `HEADKEY_API_KEY` environment variable with your API key:
 
 ### Option 1: Shell environment
 
 ```bash
 # Add to ~/.zshrc or ~/.bashrc
-export HEADKEY_API_URL="https://api.headkey.dev"
 export HEADKEY_API_KEY="cibfe_your_key_here"
 ```
 
@@ -46,7 +40,6 @@ Add to `.claude/settings.json` (project-scoped) or `~/.claude/settings.json` (gl
 ```json
 {
   "env": {
-    "HEADKEY_API_URL": "https://api.headkey.dev",
     "HEADKEY_API_KEY": "cibfe_your_key_here"
   }
 }

@@ -19,7 +19,7 @@ This skill helps users configure their connection to the Headkey Memory API.
 
 | Variable | Description | Default |
 |---|---|---|
-| `HEADKEY_API_URL` | Base URL of the Headkey API | `https://api.headkey.dev` |
+| `HEADKEY_API_URL` | Base URL of the Headkey API | `https://www.headkey.ai/api/mcp` |
 | `HEADKEY_API_KEY` | API key for authentication (prefix: `cibfe_`) | _(required)_ |
 
 ## Configuration Methods
@@ -29,7 +29,7 @@ This skill helps users configure their connection to the Headkey Memory API.
 Add to `~/.zshrc` or `~/.bashrc`:
 
 ```bash
-export HEADKEY_API_URL="https://api.headkey.dev"
+export HEADKEY_API_URL="https://www.headkey.ai/api/mcp"
 export HEADKEY_API_KEY="cibfe_your_key_here"
 ```
 
@@ -40,7 +40,7 @@ Add to `.claude/settings.json` in the project root:
 ```json
 {
   "env": {
-    "HEADKEY_API_URL": "https://api.headkey.dev",
+    "HEADKEY_API_URL": "https://www.headkey.ai/api/mcp",
     "HEADKEY_API_KEY": "cibfe_your_key_here"
   }
 }
@@ -53,7 +53,7 @@ Add to `~/.claude/settings.json` for global access:
 ```json
 {
   "env": {
-    "HEADKEY_API_URL": "https://api.headkey.dev",
+    "HEADKEY_API_URL": "https://www.headkey.ai/api/mcp",
     "HEADKEY_API_KEY": "cibfe_your_key_here"
   }
 }

@@ -14,14 +14,14 @@ Help the user configure their Headkey API connection.
    - If both are set, confirm the configuration and test the connection
 
 2. If not set, guide the user through configuration:
-   - Ask for their Headkey API URL (default: `https://api.headkey.dev`)
+   - Ask for their Headkey API URL (default: `https://www.headkey.ai/api/mcp`)
    - Ask for their Headkey API key (prefix: `cibfe_`)
    - Explain they need to set these as environment variables
 
 3. Show the user how to persist the configuration:
    ```bash
    # Add to shell profile (~/.zshrc, ~/.bashrc, etc.)
-   export HEADKEY_API_URL="https://api.headkey.dev"
+   export HEADKEY_API_URL="https://www.headkey.ai/api/mcp"
    export HEADKEY_API_KEY="cibfe_your_api_key_here"
    ```
 
@@ -29,7 +29,7 @@ Help the user configure their Headkey API connection.
    ```json
    {
      "env": {
-       "HEADKEY_API_URL": "https://api.headkey.dev",
+       "HEADKEY_API_URL": "https://www.headkey.ai/api/mcp",
        "HEADKEY_API_KEY": "cibfe_your_api_key_here"
      }
    }
