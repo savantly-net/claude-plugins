@@ -14,9 +14,9 @@
       "author": {
         "name": "Savantly"
       },
-      "source": "./headkey/",
+      "source": "./",
       "category": "productivity",
-      "homepage": "https://github.com/savantly-net/claude-plugins"
+      "homepage": "https://github.com/savantly-net/headkey-mcp-plugin"
     }
   ]
 }
