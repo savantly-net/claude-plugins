@@ -14,5 +14,6 @@
     "agents",
     "knowledge-graph",
     "mcp"
-  ]
+  ],
+  "mcpServers": "./.mcp.json"
 }
