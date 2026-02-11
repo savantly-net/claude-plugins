@@ -1,6 +1,6 @@
 {
   "headkey": {
-    "type": "http",
+    "type": "streamablehttp",
     "url": "https://www.headkey.ai/api/mcp",
     "headers": {
       "Authorization": "Bearer ${HEADKEY_API_KEY}",
