@@ -4,7 +4,7 @@
     "url": "https://www.headkey.ai/api/mcp",
     "headers": {
       "Authorization": "Bearer ${HEADKEY_API_KEY}",
-      "X-Headkey-Agent-Id": "${HEADKEY_AGENT_ID}"
+      "X-Headkey-Agent-Id": "${HEADKEY_AGENT_ID:-}"
     }
   }
 }

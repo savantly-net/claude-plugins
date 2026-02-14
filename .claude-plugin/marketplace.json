@@ -10,7 +10,7 @@
     {
       "name": "headkey",
       "description": "Memory layer for AI agents — store, organize, retrieve, and manage memories and beliefs via the Headkey API",
-      "version": "1.2.4",
+      "version": "1.2.5",
       "author": {
         "name": "Savantly"
       },
