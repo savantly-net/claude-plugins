@@ -70,6 +70,7 @@ Summarize what was created and state the first pointer's goal. Remind the user: 
 - **When a story lands, in the same commit:** check its `STATUS.md` line (date + one-line gist) · write `docs/history/<story-id>.md` (including rejected options and what was NOT exercised) · update the affected FR/NFR Status rows · amend any diverged design doc in both directions.
 - **Requirement-level decisions** (loosening a gate, deferring a clause) are dated amendments **on the requirement row itself** — a design doc may carry the reasoning but must never contradict the row.
 - **Session end:** rewrite your workstream's `NEXT_SESSION.md` — every section, against the new state. Update your line in the root index. New traps/conventions learned go to `docs/HANDBOOK.md`, not into the pointer.
+- **Then `/clear`.** Every session starts cold. A context carried across the boundary means the next turn runs on memory rather than the pointer — which hides a stale pointer until someone opens it cold weeks later.
 - **Conflicts between two decided documents** get a memo with a recommendation; the pick stays human.
 
 ## Behavior rules

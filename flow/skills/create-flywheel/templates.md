@@ -218,6 +218,7 @@ Per-story entry template:
 - **Session start:** read the root `NEXT_SESSION.md` index, then your workstream's pointer; verify its claims against the code/DB before trusting them.
 - **When a story lands, in the same commit:** check its `STATUS.md` line (date + gist) · write `docs/history/<story-id>.md`, including rejected options and what was NOT exercised · update the affected requirement rows · amend any diverged design doc in both directions.
 - **Session end:** rewrite your workstream's `NEXT_SESSION.md` — every section, against the new state — and update your line in the root index. New traps/conventions go to `docs/HANDBOOK.md`, never into the pointer.
+- **Then `/clear`.** Every session starts from a cleared context. The pointer is only load-bearing if it is actually what the next session reads; a context carried across the boundary hides a stale pointer until someone else opens it cold.
 - **Conflicts between two decided documents** get a memo with a recommendation; the pick stays human.
 
 **Working in parallel:** one `NEXT_SESSION.md` per workstream, one `docs/history/` file per story. Both are committed — never gitignored. The decision queue in a pointer is a queue a *human* reads, and an untracked pointer makes a handoff impossible. Separation comes from one file per stream, not from hiding files from git.

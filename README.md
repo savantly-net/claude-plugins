@@ -124,9 +124,14 @@ Once a project is scaffolded, `turn-flywheel` is the only one you type regularly
 /flow:turn-flywheel                # start of session: orient, verify, propose the next story — then it stops for your pick
 ...ordinary engineering...
 /flow:turn-flywheel close          # end of session: STATUS line, history entry, requirement rows, rewrite the pointer
+/clear                             # then wipe the context — the next turn must cold-start from the pointer
 ```
 
 **Close every session, including the ones where nothing landed.** A session that only discovered a blocker produces the most valuable pointer update available — and skipping the close is the single thing that degrades the whole system into three files nobody trusts.
+
+**Then `/clear`.** This isn't just about keeping the context window lean, though it does that. The pointer only works if it is genuinely the thing the next session starts from. Carry a warm context across the boundary and the next turn quietly runs on remembered detail instead — so a pointer that is thin, stale, or wrong still *feels* fine, and you find out weeks later when someone else opens it cold. Clearing is what proves the pointer carries its own weight.
+
+It also keeps the close honest in the other direction: if you can still see the whole session, it's tempting to write a thin history entry because everything is obviously in your head. It won't be tomorrow.
 
 ### You don't have to run the whole pipeline
 

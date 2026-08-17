@@ -38,6 +38,11 @@ stop and say so: it has not been scaffolded, and `/create-flywheel` is the skill
 candidate story, once there is a candidate. Burning the context window on
 orientation is how a session arrives at the work with nothing left to do it with.
 
+**Read the files even if this context already remembers them.** If the session was
+not opened cold, orientation is the step most likely to get skipped on the grounds
+that you already know — which is exactly how a wrong pointer survives. Read, verify,
+and say plainly that this was not a cold start.
+
 ## 2. Verify before trusting — the load-bearing step
 
 The pointer records what was true at last close. **Humans work between sessions**,
@@ -142,6 +147,21 @@ available.
 
 Then report the checklist explicitly: which of the nine were done, which were N/A
 and why. A silent skip is indistinguishable from a forgotten one.
+
+## Last line of a close: tell the human to `/clear`
+
+End the close by saying the session is landed and the next turn should start from a
+cleared context.
+
+This is not housekeeping. The pointer is only load-bearing if it is genuinely what
+the next session starts from. A context carried across the boundary lets the next
+turn run on remembered detail instead, so a thin or stale pointer still feels fine
+— and the rot surfaces weeks later, to whoever opens it cold. Clearing is the only
+thing that proves the pointer carries its own weight.
+
+If the human keeps working in the same context after a close, say once that the
+pointer has not been exercised and the next real cold start is still unverified.
+Do not repeat it.
 
 ---
 
