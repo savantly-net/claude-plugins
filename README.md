@@ -1,0 +1,110 @@
+# Savantly Claude Code Plugins
+
+Claude Code plugins for Savantly engineers.
+
+Currently one plugin: **`flow`** — the spec-to-shipped workflow, five skills that hand off to each other.
+
+## Install
+
+```
+/plugin marketplace add savantly-net/claude-plugins
+/plugin install flow@savantly
+```
+
+To give a whole project team the skills on clone, commit this to the project's `.claude/settings.json`:
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "savantly": {
+      "source": { "source": "github", "repo": "savantly-net/claude-plugins" },
+      "autoUpdate": true
+    }
+  },
+  "enabledPlugins": { "flow@savantly": true }
+}
+```
+
+## The pipeline
+
+Alphabetical order in the `/` menu doesn't match the order you use these in. This is the order:
+
+```
+        new project                     existing codebase
+             │                                 │
+     /flow:create-spec                 /flow:analyze-fit
+   idea → requirements,              idea → same, but graded
+   architecture, ADRs                against the real code
+             │                                 │
+             └────────────┬────────────────────┘
+                          ▼
+               /flow:create-blueprint
+          requirements → MVP scope, epics,
+          designs, phases, dependencies
+                          │
+                          ▼
+               /flow:create-flywheel
+           plan → the dev process itself
+        (installs it; run once per project)
+                          │
+                          ▼
+                /flow:turn-flywheel
+          open a session · do the work · close it
+              (run twice a session, forever)
+```
+
+| Skill | Takes | Produces |
+|---|---|---|
+| `/flow:create-spec` | A charter, idea, or brief | `requirements/`, `architecture/`, ADRs |
+| `/flow:analyze-fit` | A feature idea + the current codebase | The same, plus an impact map, a constraint check, and approach options — including "don't build this" |
+| `/flow:create-blueprint` | Either of the above | `plan/` — MVP scope, epics, stories, designs, phases |
+| `/flow:create-flywheel` | A plan, or an existing codebase | The tracked docs and the session protocol in `AGENTS.md` |
+| `/flow:turn-flywheel` | A scaffolded project | An oriented session at the start, a landed one at the end |
+
+Each skill is interactive and stops for human review between phases. None of them estimate time or cost.
+
+## What the flywheel installs
+
+Seven roles, one fact in one home:
+
+| File | Holds |
+|---|---|
+| `requirements/*.md` | The spec, with a per-row Status column |
+| `STATUS.md` | Phases, gates, spikes, infra, open decisions |
+| `docs/history/<story-id>.md` | One file per story: decisions, **rejected options**, traps, numbers, **what was NOT exercised** |
+| `<workstream>/NEXT_SESSION.md` | Session state only — the goal, the decision queue, the baseline |
+| Root `NEXT_SESSION.md` | Index of active workstreams, one line each |
+| `docs/HANDBOOK.md` | Standing knowledge — traps, conventions, how to run things |
+| `plan/epics/*.md` | Frozen spec + dated amendments |
+
+## Working in parallel
+
+The flywheel was originally extracted from a solo project. Two changes make it safe for a team:
+
+**One `NEXT_SESSION.md` per workstream, plus a root index.** The pointer is rewritten *wholesale* at every session close, which is the worst possible input to a git merge — so two developers must never share one. Separation comes from one pointer per stream.
+
+**One `docs/history/` file per story**, not one shared append-only log. Two developers landing two stories touch two different files, so the narrative never conflicts.
+
+**Both are committed. Never gitignore them.** It's tempting — they look like scratch state. But the pointer holds the *decision queue*, which is a queue a human is supposed to read, and an untracked pointer makes a handoff (vacation, review, someone picking up your stream) impossible at exactly the moment the accumulated context is worth the most.
+
+## Why `docs/history/` exists when `git log` exists
+
+Git records what happened. These files record what *didn't*:
+
+- **Rejected options** — work that was considered and refused leaves no commit and no diff. It is invisible to git by construction, and it's the first thing a future session re-litigates from scratch.
+- **What was NOT exercised** — the negative space around a story's testing. Nobody writes it in a commit message and no diff reveals it.
+- **The numbers as of then** — test and mutation counts at the moment the story landed.
+
+Also practical: squash-merge workflows flatten per-commit granularity anyway, and an agent scanning months of `git log` burns context that a targeted `STATUS.md` line → history file read does not.
+
+## Contributing
+
+Skills live in `flow/skills/<name>/SKILL.md`, with supporting files (`phases.md`, `templates.md`, `output-structure.md`, `adr-template.md`) alongside.
+
+The skills reference each other by slash command. If you rename one, sweep every reference — a half-done rename breaks the handoff between skills silently, which is the failure mode this whole system is built to avoid:
+
+```
+grep -rn "/flow:\|/create-spec\|/analyze-fit\|/create-blueprint\|/create-flywheel\|/turn-flywheel" flow/skills/
+```
+
+Bump `version` in both `.claude-plugin/marketplace.json` and `flow/.claude-plugin/plugin.json` when you change a skill.
