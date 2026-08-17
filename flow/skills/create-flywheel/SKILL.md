@@ -45,7 +45,7 @@ Determine the mode and confirm both mode and target layout with the user before 
 1. **Add the Status column** to `requirements/functional.md` and `non-functional.md`, with the tracked-table preamble. `business.md` gets a note that BRs are goals tracked through the rows citing them.
 2. **Generate `STATUS.md`** mechanically from `plan/phases.md` + `plan/epics/*` + `plan/spikes.md` + `plan/infrastructure.md`: one section per phase with its gate, story checkbox one-liners, spikes table, infra items, open decisions from `open-questions.md`.
 3. **Create `docs/history/`** with its `README.md` convention stub, **`docs/HANDBOOK.md`** (seeded with the universal conventions from `templates.md`; project-specific traps accumulate later).
-4. **Set up the pointers** — see step 3 below. At minimum: a root `NEXT_SESSION.md` index and one workstream pointer.
+4. **Set up the pointers** — per the "Set up the pointers" section below. At minimum: a root `NEXT_SESSION.md` index and one workstream pointer.
 5. **Annotate epic files** with the definition-of-done header note.
 6. **Write the session protocol into `AGENTS.md`** (or `CLAUDE.md` if that's the repo's convention) — this is the load-bearing step; without it the files are furniture. Append, never overwrite; if a "where things live" section already exists, reconcile.
 
