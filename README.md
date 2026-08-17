@@ -63,6 +63,75 @@ Alphabetical order in the `/` menu doesn't match the order you use these in. Thi
 
 Each skill is interactive and stops for human review between phases. None of them estimate time or cost.
 
+## Using them
+
+### Picking an entry point
+
+One question: **does the code exist yet?**
+
+- **No** — new product, new service, a greenfield rewrite → `/flow:create-spec`
+- **Yes** — a feature, integration, or capability landing in something you already run → `/flow:analyze-fit`
+
+Rule of thumb: if answering "should we build this?" makes you say *"well, it depends how X currently works"* — that's `analyze-fit`. It reads the actual code before it grades the idea, and "don't build this" is one of the outcomes it's allowed to reach.
+
+### When to reach for each
+
+| Skill | Reach for it when | Have ready | Run it |
+|---|---|---|---|
+| `create-spec` | A charter, RFP, or napkin idea needs to become something you can plan against | The source doc, or be ready to talk it through | Once per project |
+| `analyze-fit` | Someone asks "can we add X?" and the honest answer needs the codebase | A description of the idea; run it **from the repo in question** | Once per feature idea |
+| `create-blueprint` | Requirements are settled and you need scope, epics, and a build order | A directory with `requirements/` + `architecture/` | Once per project (again after a major re-scope) |
+| `create-flywheel` | A plan is ready to be worked — or an existing project needs the process retrofitted | The plan directory, or just the repo | **Once per project, ever** |
+| `turn-flywheel` | You're sitting down to work, and again when you stand up | Nothing | **Twice a session, forever** |
+
+### What a run feels like
+
+The first three are **long interactive sessions**, not one-shot generators. Each works through 7 phases, presents its output, and waits for you before moving on. Expect to actually participate — the phases where you push back are the ones that make the artifacts worth having.
+
+- **Nothing is written until the end.** You can bail after any phase and lose only the conversation.
+- **Technology choices are never finalized without you.** Anything unconfirmed is marked `PROPOSED`.
+- **Vague input gets flagged, not filled in.** If the brief is thin, the skill says so rather than inventing acceptance criteria.
+- **Type them explicitly.** These are heavy workflows — invoke them on purpose rather than letting them fire off a passing mention.
+
+### A greenfield run
+
+```
+/flow:create-spec docs/charter.md          # → requirements/, architecture/, ADRs, open-questions.md
+/flow:create-blueprint projects/thing/     # → plan/: MVP scope, epics, designs, phases
+/flow:create-flywheel projects/thing/      # → STATUS.md, docs/history/, pointers, AGENTS.md protocol
+/flow:turn-flywheel                        # → first session opens
+```
+
+### A feature on an existing codebase
+
+```
+cd the-repo
+/flow:analyze-fit "let franchisees export their territory map as a PDF"
+```
+
+That alone may be the whole job — an impact map, a constraint check, and three approach options is often enough to decide. If it turns into real work:
+
+```
+/flow:create-blueprint docs/use-cases/territory-pdf-export/
+/flow:turn-flywheel                        # the repo already has the flywheel installed
+```
+
+### The daily loop
+
+Once a project is scaffolded, `turn-flywheel` is the only one you type regularly:
+
+```
+/flow:turn-flywheel                # start of session: orient, verify, propose the next story — then it stops for your pick
+...ordinary engineering...
+/flow:turn-flywheel close          # end of session: STATUS line, history entry, requirement rows, rewrite the pointer
+```
+
+**Close every session, including the ones where nothing landed.** A session that only discovered a blocker produces the most valuable pointer update available — and skipping the close is the single thing that degrades the whole system into three files nobody trusts.
+
+### You don't have to run the whole pipeline
+
+`analyze-fit` ending in "don't build this" is a successful run. `create-spec` without a blueprint is fine if the project isn't funded yet. The only skill that expects its predecessor's output on disk is `create-blueprint`, and it will tell you what's missing rather than guess.
+
 ## What the flywheel installs
 
 Seven roles, one fact in one home:
