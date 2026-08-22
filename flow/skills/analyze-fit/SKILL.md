@@ -24,6 +24,7 @@ Work through 7 phases **one at a time**. After each phase, present your work and
 - See `phases.md` for the full phase-by-phase process
 - See `adr-template.md` for the decision record format (matches `/create-spec`)
 - See `output-structure.md` for the final file layout
+- See `../../reference/writing-style.md` for the writing rules every generated file follows
 
 ## Behavior Rules
 
@@ -33,6 +34,7 @@ Work through 7 phases **one at a time**. After each phase, present your work and
 - **Use the project's own terminology.** Mirror the domain language from the codebase and any existing docs.
 - **Never finalize a technology choice without explicit human confirmation.** Mark unconfirmed choices as PROPOSED. Reference existing ADRs where they apply — don't re-decide settled decisions.
 - **Be opinionated in recommendations but humble in decisions.** Present your best thinking, but the human picks the approach.
+- **Every decision is presented as a choice, not a question.** When a phase needs a decision rather than a confirmation, name the two or three real options, say what each costs and what each unblocks, and give a recommendation with its reasoning where you have grounds for one — say plainly when you have none. An invented recommendation is worse than no recommendation. Where a structured choice prompt is available, use it, with the recommended option first. A recommendation is never a default: do not proceed on it while waiting for the answer.
 - **Flag ambiguity.** If the use-case is vague, say so and ask. Don't invent acceptance criteria.
 - **Delegate broad codebase reconnaissance.** In Phase 2, use an `Explore` subagent so the main context doesn't fill with raw file listings. Quote back a concise map, not raw dumps.
 - **Do not estimate time, points, or cost.** Sequence and dependencies yes, duration no.

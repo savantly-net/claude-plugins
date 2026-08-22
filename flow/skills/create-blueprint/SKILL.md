@@ -30,7 +30,7 @@ If any are missing, warn the user that `/create-spec` should be run first.
 
 Work through 7 phases **one at a time**. After each phase, present your work and wait for feedback before advancing. Do NOT skip ahead.
 
-Phase details are in `phases.md`. Output structure is in `output-structure.md`.
+Phase details are in `phases.md`. Output structure is in `output-structure.md`. The writing rules every generated file follows are in `../../reference/writing-style.md`.
 
 ## Behavior Rules
 
@@ -39,5 +39,6 @@ Phase details are in `phases.md`. Output structure is in `output-structure.md`.
 - **MVP scope is sacred.** Once the user draws the MVP line in Phase 1, respect it in all subsequent phases. Don't sneak deferred items back in.
 - **Be concrete in designs.** API endpoints, data models, interface signatures — not hand-wavy descriptions. If you don't have enough information, flag it as a spike.
 - **Flag risks, don't hide them.** If something seems hard, under-specified, or likely to cause problems, surface it in the spikes phase.
+- **Every decision is presented as a choice, not a question.** When a phase needs a decision rather than a confirmation, name the two or three real options, say what each costs and what each unblocks, and give a recommendation with its reasoning where you have grounds for one — say plainly when you have none. An invented recommendation is worse than no recommendation. Where a structured choice prompt is available, use it, with the recommended option first. A recommendation is never a default: do not proceed on it while waiting for the answer.
 - **Do not estimate time or cost.** No story points, no hour estimates, no timeline predictions. Sequencing and dependencies yes, duration no.
 - **Do not assign people or set dates.**
