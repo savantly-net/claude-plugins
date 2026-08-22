@@ -67,16 +67,22 @@ Summarize what was created and state the first pointer's goal. Remind the user: 
 ## The session protocol (written into AGENTS.md verbatim from `templates.md`)
 
 - **Session start:** read the root `NEXT_SESSION.md` index, then your workstream's pointer. Verify its claims against the code/DB before trusting them — it records what was true at last close, and humans work between sessions.
+- **Choosing the work:** one specific, unblocked, buildable unit with no divergence touching it → say what you are starting and start; a single candidate is not a choice. Two live candidates, an open decision or spike, or scope that would have to be invented → present and stop.
 - **When a story lands, in the same commit:** check its `STATUS.md` line (date + one-line gist) · write `docs/history/<story-id>.md` (including rejected options and what was NOT exercised) · update the affected FR/NFR Status rows · amend any diverged design doc in both directions.
 - **Requirement-level decisions** (loosening a gate, deferring a clause) are dated amendments **on the requirement row itself** — a design doc may carry the reasoning but must never contradict the row.
+- **The close is not a command you wait for** — it fires at a landing point: the unit's ACs are met and the work is about to be committed, a blocker halts it with nothing else startable, or context is materially consumed. One unit of work per session; the session does not reopen in the same context.
 - **Session end:** rewrite your workstream's `NEXT_SESSION.md` — every section, against the new state. Update your line in the root index. New traps/conventions learned go to `docs/HANDBOOK.md`, not into the pointer.
+- **No self-invalidating facts** in the pointer or `STATUS.md` — no commit counts, no HEAD SHAs. The file is committed after it is written, so a count is wrong by one before anyone reads it. Branch, PR number and state, pushed vs. local, and the last landed story ID say the same thing and survive.
 - **Then `/clear`.** Every session starts cold. A context carried across the boundary means the next turn runs on memory rather than the pointer — which hides a stale pointer until someone opens it cold weeks later.
-- **Conflicts between two decided documents** get a memo with a recommendation; the pick stays human.
+- **Every stop is a choice, not a question:** name the two or three real options, what each costs, and the recommendation with its reasoning where there are grounds — in the session and in the pointer's decision queue alike. Say plainly when there are no grounds.
+- **Conflicts between two decided documents** get a memo with the options and a recommendation; the pick stays human.
 
 ## Behavior rules
 
 - **Never overwrite existing files without asking** — especially requirements/plan docs (they are someone's decisions) and any existing STATUS/NEXT_SESSION (offer merge).
 - **Never fabricate a status.** Greenfield rows are ⬜; adopt-mode rows come from the audit or stay flagged. A wrong ✅ is worse than a stale ⬜.
+- **Write every scaffolded file in Simplified Technical English** — the rules are in `../../reference/writing-style.md`, and they are installed into the project's `HANDBOOK.md` and `AGENTS.md` so later sessions keep to them. Existing requirement and plan text is **not** restyled: its wording is someone's decision.
 - **Respect the repo's layout** — `docs/` at root, `projects/<name>/`, whatever exists. The system is the seven roles, not the seven paths.
+- **Never write a self-invalidating fact into a scaffolded file** — no commit counts, no HEAD SHAs in `STATUS.md` or any pointer.
 - **Never gitignore a pointer or a history file.** If parallel developers are colliding, the fix is one pointer per workstream, not an untracked one.
 - **Do not install a task tracker, board, or tooling** — this is files-in-git by design; status updates ride the same commits as the work they describe.

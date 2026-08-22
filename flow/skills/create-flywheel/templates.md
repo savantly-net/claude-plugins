@@ -25,6 +25,8 @@ Add a `Status` column to every table; initialize per mode (⬜ **Open** for gree
 >
 > When a story lands: check the box here with the date and a one-line gist; write `docs/history/<story-id>.md`; update the requirement rows.
 >
+> **No self-invalidating facts here or in a pointer** — no commit counts, no HEAD SHAs. This file is committed *after* it is written, so a count is wrong by one before anyone reads it. Name the branch, the PR and its state, and the last landed story ID instead.
+>
 > **Legend:** ⬜ not started · 🟨 in progress · ✅ done · 🚫 blocked (note blocker)
 
 **Current phase: Phase 0 — <name>** (entered <date>).
@@ -133,14 +135,20 @@ Per-story entry template:
 > **This is a pointer, not a log and not a handbook.** It holds only *session state*: the goal, the human's decision queue, live workspace/infra state, and the baseline. Everything durable lives where it belongs — **standing knowledge: `docs/HANDBOOK.md`** · requirement status: `requirements/` (tracked tables) · phases/gates/stories/infra: `STATUS.md` · per-story narrative: `docs/history/<story-id>.md` · history: `git log`. Rewrite this file at the end of each session; if you are writing knowledge into it, you are writing it in the wrong file.
 >
 > **This pointer belongs to one workstream.** It is rewritten wholesale at every close, so a second developer must get their own — never share one.
+>
+> **No self-invalidating facts.** Never record a commit count or a HEAD SHA: this file is committed *after* it is written, so the count is wrong by one before anyone reads it and the SHA names the commit before the close. Record branch name, PR number and state, merged/pushed, and the last landed story ID — those survive the close's own commit. Test and lint numbers stay; running them doesn't change them.
 
 ## ⚠️ Operational state — read before touching anything
+
+(branch · PR number and state · what is pushed vs. only local · what fires · what is live. Never a commit count or a SHA.)
 
 (none yet)
 
 ## ⚠️ Things that need <owner>
 
 (decisions the next session must not make on its own — this is a queue a human reads, which is why this file is committed)
+
+(write each one as a **choice**, not a question: the two or three real options, what each costs and unblocks, and the recommendation with its reasoning where there are grounds for one — say so plainly when there are none. A bare question makes the reader redo the analysis the session already did.)
 
 ## Goal
 
@@ -168,6 +176,18 @@ Per-story entry template:
 - A screen that shows you what it was told cannot verify itself: verify effects in the database/storage, prices against the vendor's own ledger, delivered media by its bytes.
 - A vendor's API shape is read from `node_modules` or the vendor's own pages, dated; a vendor's *legal* terms the same way — quoted and dated; third-party claims are named as such.
 - Read the DB before trusting a status doc. A route proved by a spike is not a route proved by shipped code.
+
+## Writing rules for these documents
+
+These apply to every tracked file: requirements, ACs, designs, `STATUS.md` lines, `docs/history/` entries, and the pointer. They are the enforceable core of **ASD-STE100 Simplified Technical English** — the approved dictionary is not applied, so do not claim conformance.
+
+- One topic per sentence. Instructions 20 words or fewer; descriptive text 25 or fewer. Six sentences per paragraph.
+- Active voice, with the actor named. A passive requirement hides who is responsible.
+- One word, one meaning — repeat the term, never vary it for style. In a spec a synonym reads as a distinction.
+- Noun clusters of three words maximum. Keep articles. Present tense. No `-ing` form where a finite verb works.
+- One obligation per requirement row (`must` / `must not` / `should`); one testable condition per AC.
+- Specific quantities with units. "About", "quickly", and "as needed" are defects in a requirement.
+- **Not governed:** conversation with a human, quoted material (gates, vendor terms, error strings), and existing text — a decided document's wording is someone's decision and is amended by appending, never restyled.
 
 ## Test rules
 
@@ -216,10 +236,15 @@ Per-story entry template:
 
 **The session protocol:**
 - **Session start:** read the root `NEXT_SESSION.md` index, then your workstream's pointer; verify its claims against the code/DB before trusting them.
+- **Choosing the work:** when the pointer names one specific, unblocked, buildable unit and verification turned up nothing that touches it, say what you are starting and start — a single candidate is not a choice, and stopping to ask about it just spends a human's attention. Two live candidates, an open decision or spike, a divergence, or scope that would have to be invented → present the options and stop. Conflicts between decided documents and gate judgment calls stay human unconditionally.
 - **When a story lands, in the same commit:** check its `STATUS.md` line (date + gist) · write `docs/history/<story-id>.md`, including rejected options and what was NOT exercised · update the affected requirement rows · amend any diverged design doc in both directions.
+- **The close is not a command you wait for** — it is what the session does at a landing point: the unit's ACs are met and the work is about to be committed (that commit carries the above), or a blocker halts it and nothing else is startable without a human, or context is materially consumed. One unit of work per session; after the close the session is over, and it does not reopen in the same context.
 - **Session end:** rewrite your workstream's `NEXT_SESSION.md` — every section, against the new state — and update your line in the root index. New traps/conventions go to `docs/HANDBOOK.md`, never into the pointer.
+- **No self-invalidating facts in `NEXT_SESSION.md` or `STATUS.md`** — no commit counts, no HEAD SHAs. The file is committed *after* it is written, so the count is wrong by one before anyone reads it. Record branch, PR number and state, pushed vs. local, and the last landed story ID. Test/lint numbers stay.
 - **Then `/clear`.** Every session starts from a cleared context. The pointer is only load-bearing if it is actually what the next session reads; a context carried across the boundary hides a stale pointer until someone else opens it cold.
-- **Conflicts between two decided documents** get a memo with a recommendation; the pick stays human.
+- **Write every tracked file in Simplified Technical English** — the rules are in `docs/HANDBOOK.md`. One topic per sentence, active voice with the actor named, one word per meaning, one obligation per requirement row. It does not govern conversation, quoted material, or the wording of an already-decided document.
+- **Every stop is a choice, not a question:** when work needs a human decision — the pick between candidates, a divergence's disposition, an entry in the pointer's decision queue — name the two or three real options, what each costs and unblocks, and the recommendation with its reasoning where there are grounds. Say plainly when there are none; an invented recommendation is worse than no recommendation. A recommendation is never a default — do not start it while waiting for the answer.
+- **Conflicts between two decided documents** get a memo with the options and a recommendation; the pick stays human.
 
 **Working in parallel:** one `NEXT_SESSION.md` per workstream, one `docs/history/` file per story. Both are committed — never gitignored. The decision queue in a pointer is a queue a *human* reads, and an untracked pointer makes a handoff impossible. Separation comes from one file per stream, not from hiding files from git.
 ```

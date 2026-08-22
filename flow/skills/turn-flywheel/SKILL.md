@@ -1,7 +1,7 @@
 ---
 name: turn-flywheel
-description: Turn the session flywheel — open a session (orient from the workstream's NEXT_SESSION.md, verify its claims against the code, propose the next unit of work) or close one (the landing ritual: STATUS line, per-story history entry, requirement rows, design amendments, then rewrite the pointer). Use at the start of a session on a flywheel project, and again at the end. Companion to /create-flywheel, which installs the process.
-argument-hint: [workstream-slug] | close
+description: Turn the session flywheel — open a session (orient from the workstream's NEXT_SESSION.md, verify its claims against the code, then start the next unit of work when exactly one is live, or propose when there is a real choice) or close one (the landing ritual: STATUS line, per-story history entry, requirement rows, design amendments, then rewrite the pointer). Use at the start of a session on a flywheel project; the close fires by itself when the work lands. Companion to /create-flywheel, which installs the process.
+argument-hint: [workstream-slug] | close | ask
 ---
 
 # Turn the Flywheel
@@ -13,10 +13,27 @@ every session's last act is rewriting it. Between those two points is ordinary
 engineering, which this skill does not try to systematize. What it systematizes is
 the opening and the close — because those are what erode, and their failure is silent.
 
+**This skill's text governs at runtime.** A project scaffolded by an earlier
+`/create-flywheel` may carry an older protocol in its `AGENTS.md` — one that says the
+session always stops for the pick, or waits to be told to close. Where the two differ,
+this skill supersedes it; that is a version skew, not a conflict between two decided
+documents, so it needs no memo. Refresh the project's `AGENTS.md` section at the next
+close if it is materially stale.
+
 ## Mode detection
 
-- Argument contains `close`, `end`, `wrap` → **CLOSE mode**.
+Match **whole words only** — the argument may also be a workstream slug, and a
+substring match sends `backend` to CLOSE mode and `tasks` to propose-only.
+
+- The argument is, or contains as a standalone word, `close`, `end`, or `wrap` →
+  **CLOSE mode**.
+- It is, or contains as a standalone word, `ask` → **OPEN mode, propose-only**: run
+  the open exactly as below but never auto-start, even when the work is unambiguous.
+  This composes with a slug: `<slug> ask` scopes *and* forces the stop.
 - Otherwise → **OPEN mode**, optionally scoped to a named workstream slug.
+
+If a workstream is genuinely named `close` or `ask`, say what you read it as and
+confirm before acting.
 
 If the target project has no `STATUS.md` / `NEXT_SESSION.md` / `docs/history/`,
 stop and say so: it has not been scaffolded, and `/create-flywheel` is the skill for that.
@@ -61,7 +78,7 @@ Check, don't assume:
 Report every divergence found, plainly. A divergence is itself a finding: the
 pointer gets corrected at close **even if nothing else happens this session**.
 
-## 3. Choose the work — and stop
+## 3. Choose the work
 
 Start from the goal the pointer states, then cross-check it against `STATUS.md`
 before accepting it:
@@ -69,6 +86,11 @@ before accepting it:
 - Is the phase gate blocked?
 - Is a spike this story depends on still unanswered?
 - Is an open decision marked due this phase, and still open?
+- **Has every story it depends on landed?** `STATUS.md` will not tell you — it
+  flattens each phase into a list and keeps no story-to-story edges. Read the
+  candidate's `**Dependencies:**` field in its epic file and `plan/dependencies.md`,
+  then confirm each named predecessor is ✅ in `STATUS.md`. A predecessor sitting at
+  🟨 counts as not landed.
 
 **Never start a story whose blocking spike or decision is open.** Surface it and
 propose the alternative — `plan/dependencies.md` names what can proceed in
@@ -81,9 +103,65 @@ one exists. If the story touches a surface another story already built, read tha
 story's history entry too — its **rejected options** section is where you find out
 why the obvious approach was already refused.
 
-Present: the story, its acceptance criteria, what it depends on, what it will
-touch, and anything the pointer got wrong. **Then stop.** The pick stays human —
-that is the process, not politeness.
+### The one-candidate test
+
+Auto-start is a fast path **through** these checks, never around them. Apply all
+five; every one must hold:
+
+1. The pointer's goal names a **specific** story or spike — not a menu, not "continue
+   the epic".
+2. Verification found **no divergence that touches it**.
+3. It is **unblocked** on all four axes: no open spike it depends on, no open decision
+   it needs, no unlanded predecessor story, and no phase gate standing in front of it.
+   The predecessor check is read from the epic's `**Dependencies:**` field and
+   `plan/dependencies.md` — never inferred from a story's position in `STATUS.md`'s
+   per-phase list.
+4. Nothing in the pointer's "things that need a human" queue is a prerequisite for it,
+   and — in adopt mode — no audit item awaiting disposition covers the same surface.
+5. Its ACs and design doc exist and are **specific enough to build against**. If
+   starting means inventing scope, this fails.
+
+**All five hold → start.** Present the full picture anyway — the story, its acceptance
+criteria, what it depends on, what it will touch, what verification found, and the one
+line on why it was the only candidate — then say explicitly that you are **starting
+now**, and start. The announcement is the human's veto: it must be legible enough to
+interrupt, so never bury the pick in a paragraph and never begin editing before it has
+been said.
+
+**Any of the five fails → stop, with a choice.** Present at most three candidates and
+name precisely which test failed and for which one, per **Presenting a decision** below.
+
+### Always stop, regardless
+
+- Two or more unblocked candidates that the pointer does not order between.
+- A verification divergence that touches the candidate, or that changes what should
+  be worked on at all.
+- The work needs an answer from the decision queue, or from `STATUS.md`'s open
+  decisions.
+- Adopt-mode audit items awaiting disposition on the same surface.
+- The "unit" is a phase gate, a release, or anything outward-facing and hard to reverse.
+- The `ask` argument was passed.
+
+### Presenting a decision
+
+This applies to every stop in this skill, not only the pick: a divergence that needs a
+disposition, a conflict between decided documents, an item going into the pointer's
+decision queue.
+
+A decision handed back as an open question is work handed back. Present it as a
+**choice**:
+
+- **The real options** — two or three, each named. Not "what do you want to do?"
+- **What each costs and what each unblocks**, in one line apiece.
+- **A recommendation, when you have grounds for one** — say which, and why. The
+  reasoning is the point: it is what lets the human refuse it on its merits.
+- **Say plainly when you have no grounds.** A recommendation invented to look
+  decisive is worse than none, and this system runs on a stated preference meaning
+  something.
+
+Where a structured choice prompt is available, use it, with the recommended option
+first. A recommendation is never a default: do not begin the recommended option while
+waiting for the answer, and do not re-ask a decision the human has already made.
 
 ## 4. Work
 
@@ -92,11 +170,31 @@ Ordinary engineering, with four standing rules:
 - **Code and doc diverge → follow the code, amend the doc in the same commit** —
   and say which one was wrong. Sometimes the doc is right and the code is the bug.
 - **Two decided documents conflict → do not resolve it.** Write a memo under
-  `memos/` with a recommendation. The pick stays human.
+  `memos/` naming the options and a recommendation, per **Presenting a decision**.
+  The pick stays human.
 - **Note traps as you hit them.** They go to `docs/HANDBOOK.md` at close, not into
   the pointer.
 - **Never widen a result type, gate, or guarantee silently.** If pressure to do so
   appears, it belongs in the story's `docs/history/` entry as a rejected option.
+
+### When to close — the close is not a command you wait for
+
+It is what the session does at a landing point. Enter CLOSE mode on your own when any
+of these is true:
+
+- **The unit chosen at open has landed** — its ACs are met and the work is ready to
+  commit. That commit is the one that carries Part 1, so run Part 1 *before* committing,
+  not after.
+- **A blocker halts the named work** and nothing else is sensibly startable without a
+  human. This is the most valuable close there is; do not let it look like a wasted
+  session.
+- **Context is materially consumed**, or a compaction has already happened. Landing
+  early with an honest pointer beats being cut off mid-story with none.
+
+**One unit of work per session.** After the close, the session is over — say so and
+stop. Do not open again in the same context, however much room is left: an auto-reopen
+would carry the warm context across the boundary and leave the pointer unexercised,
+which is the whole thing the `/clear` exists to prevent.
 
 ---
 
@@ -135,6 +233,20 @@ available.
    is only local) · the baseline · where things live. **Rewrite only your own
    pointer**; another workstream's is not yours to rewrite, and a wholesale rewrite
    of a shared pointer is how a merge conflict becomes lost session state.
+
+   **Every entry in the decision queue is written as a choice**, per **Presenting a
+   decision**: the options, what each costs, and the recommendation with its reasoning.
+   A queue entry phrased as a bare question makes the human do the analysis this
+   session already did and then threw away.
+
+   **Record no fact that writing it down invalidates.** A commit count and a HEAD
+   SHA are the two that bite: the pointer is committed *after* it is written, so the
+   count is already wrong by one before anyone reads it, and the SHA names the commit
+   before the close. Never write either into the pointer or `STATUS.md`. Record what
+   stays true instead — **branch name, PR number and its state, whether the branch is
+   merged, whether the work is pushed, and the last landed story ID.** Test, lint, and
+   mutation numbers stay: running them doesn't change them, and they are dated
+   measurements, not a position in history.
 7. **New traps and conventions → `docs/HANDBOOK.md`**, never into the pointer. If
    you find yourself writing standing knowledge into `NEXT_SESSION.md`, it is in
    the wrong file.
@@ -169,12 +281,22 @@ Do not repeat it.
 
 - **Never fabricate a status.** ⬜ is better than a wrong ✅. A wrong ✅ costs a
   future session the time to discover it, plus the trust in every other row.
+- **Write every artifact in Simplified Technical English** — `../../reference/writing-style.md`. It governs the STATUS line, the history entry, the requirement row, the HANDBOOK entry, and the pointer; it does not govern what you say to the human, and it is never a reason to reword a decided document.
 - **Never mark a gate closed by inference.** Gates are written to be checked, not
   reasoned about.
 - **The close-out rides with the work, not with "the next commit."** That deferral
   is how the whole system degrades into three files nobody trusts.
-- **The pick stays human**: story selection, conflicts between decided documents,
-  and any gate judgment call.
+- **A stop is a choice, not a question.** Options, costs, and a recommendation with
+  its reasoning where you have grounds — in the session, in a memo, and in the
+  pointer's decision queue alike.
+- **The pick stays human whenever there is a pick to make.** One unambiguous
+  candidate is not a choice, and stopping to ask about it just spends a human's
+  attention on rubber-stamping. Two candidates, an open decision, or a divergence *is*
+  a choice — and those stop. Conflicts between two decided documents, and any gate
+  judgment call, stay human unconditionally.
+- **No self-invalidating facts in tracked files** — no commit counts, no HEAD SHAs.
+  Branch, PR number and state, and the last landed story ID say the same thing and
+  survive the close's own commit.
 - **Do not install tooling, boards, or trackers.** This is files-in-git by design;
   status updates ride the same commits as the work they describe.
 - **Stay in your own lane.** One pointer per workstream, one history file per story.
