@@ -73,10 +73,50 @@ Check, don't assume:
 | "migration N landed" | `ls prisma/migrations`, and confirm the model is actually in `schema.prisma` |
 | "dependency X added" | `package.json` |
 | "N tests passing" (the baseline) | run the suite if it's cheap; otherwise treat the number as unverified and say so |
-| env vars, dashboards, third-party state | **cannot be verified from here** — surface as needing a human, never assume |
+| env vars, dashboards, third-party state | **not readable directly — that is not the same as unmeasurable.** See below before calling it a human's job |
 
 Report every divergence found, plainly. A divergence is itself a finding: the
 pointer gets corrected at close **even if nothing else happens this session**.
+
+### "I cannot read it" is not "I cannot measure it"
+
+The last row is where sessions give up too early, and the cost compounds: a
+blocker written into the queue as *"no session can settle this"* gets copied
+forward at every close, unexamined, for as long as the project lasts.
+
+**Before you surface a third-party unknown as needing a human, name the cheapest
+reversible action that would make the system answer it.** Usually one exists:
+
+- **Push a branch and read what answers.** CI, preview bots and deployment
+  integrations comment the platform, the project, the environments and the URLs —
+  facts no amount of reading the repository will produce.
+- **Ask the provider's own CLI.** A `list` command against the account you already
+  hold credentials for is read-only and usually settles the question outright.
+- **Fetch the public surface.** An unauthenticated `curl` of a deployed page, feed
+  or health endpoint measures what is actually live.
+- **Read the platform's records through its API** — deployment history, statuses,
+  environment names — rather than its dashboard.
+
+**Prefer the artifact's own output over the platform's metadata whenever the two
+could disagree.** A deployment record names the addresses the platform assigned; the
+running application names the address it actually believes it has, and when a custom
+domain exists only the second one is right.
+
+### The guard that makes the above safe
+
+**Before any action that pushes, merges or deploys, say what it does to the world
+outside the repository.** Read it off the plan's own deployment and infrastructure
+decisions — **that is usually where the coupling is already written down, unread.**
+
+- **Does the build run migrations?** Then a push to a watched branch is a schema
+  change, and a merge to the default branch is a production schema change.
+- **Does it change a public surface, or need a variable that is not set?**
+- **Does it cost money, send mail, or call a third party for real?**
+
+**A session never merges a branch that touches migrations**, and never treats
+"just push it and see" as free until it has answered these. The two halves of this
+section are one rule: **measure instead of assuming, and know what the measurement
+costs before you take it.**
 
 ## 3. Choose the work
 
@@ -163,6 +203,22 @@ Where a structured choice prompt is available, use it, with the recommended opti
 first. A recommendation is never a default: do not begin the recommended option while
 waiting for the answer, and do not re-ask a decision the human has already made.
 
+**A blocker that has stopped the next unit for three closes is itself a finding.**
+Not every long-lived entry qualifies — a judgment the human is right to sit on can
+wait indefinitely, and re-raising it is noise. The rule fires on the entry that
+**blocks the work**: when you are about to copy one forward unchanged again,
+**re-examine the frame rather than the options.**
+
+- **Is it actually unmeasurable, or only unread?** Run the previous section. A
+  question that eight closes called impossible is usually one nobody tried to
+  measure.
+- **Are all the options "the human does X"?** Then the option set is the problem,
+  not the human's silence. **An option set with no cheap session action in it is
+  incomplete** — find one, or say plainly that you looked and there is none.
+- **Say the count out loud** when you present it: *"this has blocked the next unit
+  for four closes"* is information the human does not otherwise have, and it is
+  what tells them the framing has gone wrong.
+
 ## 4. Work
 
 Ordinary engineering, with four standing rules:
@@ -176,6 +232,10 @@ Ordinary engineering, with four standing rules:
   the pointer.
 - **Never widen a result type, gate, or guarantee silently.** If pressure to do so
   appears, it belongs in the story's `docs/history/` entry as a rejected option.
+- **Know what landing the work does before you land it.** Re-read the guard in
+  section 2. **A session never merges a branch that touches migrations**, and it
+  says the deploy impact out loud — in the pull request body, and to the human —
+  before asking for a merge.
 
 ### When to close — the close is not a command you wait for
 
@@ -223,6 +283,14 @@ available.
 4. **Design docs** — amend any that diverged, in both directions.
 5. **Epic file** — if the *spec* diverged rather than the status, add a dated
    amendment annotation. Never rewrite the original ACs; append.
+6. **Say what landing this does.** Name the deploy impact of the unit — migrations,
+   public surfaces, environment variables, anything outward-facing — and put it
+   **at the top of the pull request body** where the person merging will read it.
+   **Read it off the plan's own deployment and infrastructure decisions**; the
+   coupling is usually already written down and simply never surfaces at the moment
+   it matters. **"Nothing — no code and no migration" is the answer more often than
+   not, and saying it is the point**: a reader who is told every time learns to
+   trust the one time it says otherwise.
 
 ## Part 2 — session end, once
 
@@ -294,9 +362,17 @@ Do not repeat it.
   attention on rubber-stamping. Two candidates, an open decision, or a divergence *is*
   a choice — and those stop. Conflicts between two decided documents, and any gate
   judgment call, stay human unconditionally.
-- **No self-invalidating facts in tracked files** — no commit counts, no HEAD SHAs.
-  Branch, PR number and state, and the last landed story ID say the same thing and
-  survive the close's own commit.
+- **No self-invalidating facts in tracked files.** The test: **would the next
+  ordinary action make this wrong?** Commit counts and HEAD SHAs fail it outright.
+  **Record what is in flight, never a history of what was** — the branch and pull
+  request a reader could still commit to, and the last landed story ID. **A merged
+  branch's name, and any instruction conditioned on whether it has merged yet, goes
+  stale at the next merge**, and a reader cannot tell a stale name from a live one,
+  so they learn to distrust all of them. Send the reader to the live list instead.
+- **A pointer is written before its own commit, so say so rather than claiming
+  otherwise.** If the close's own branch is in flight while the file says nothing
+  is, name that one exception and what it touches. **The next session must be able
+  to tell the close's own pull request from somebody else's work.**
 - **Do not install tooling, boards, or trackers.** This is files-in-git by design;
   status updates ride the same commits as the work they describe.
 - **Stay in your own lane.** One pointer per workstream, one history file per story.
