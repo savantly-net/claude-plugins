@@ -1,7 +1,7 @@
 ---
 name: turn-flywheel
-description: Turn the session flywheel — open a session (orient from the workstream's NEXT_SESSION.md, verify its claims against the code, then start the next unit of work when exactly one is live, or propose when there is a real choice) or close one (the landing ritual: STATUS line, per-story history entry, requirement rows, design amendments, then rewrite the pointer). Use at the start of a session on a flywheel project; the close fires by itself when the work lands. Companion to /create-flywheel, which installs the process.
-argument-hint: [workstream-slug] | close | ask
+description: Turn the session flywheel — open a session (orient from the workstream's NEXT_SESSION.md, verify its claims against the code, then start the next unit of work when exactly one is live, or propose when there is a real choice) or close one (the landing ritual: STATUS line, per-story history entry, requirement rows, design amendments, then rewrite the pointer). Use at the start of a session on a flywheel project; the close fires by itself when the work lands. Companion to /create-flywheel, which installs the process. LOOP MODE, the `loop` argument, makes the session declare the outcome of its own turn in a machine-readable block, so a runner can drive sessions unattended.
+argument-hint: [workstream-slug] | close | ask | loop
 ---
 
 # Turn the Flywheel
@@ -32,8 +32,14 @@ substring match sends `backend` to CLOSE mode and `tasks` to propose-only.
   This composes with a slug: `<slug> ask` scopes *and* forces the stop.
 - Otherwise → **OPEN mode**, optionally scoped to a named workstream slug.
 
-If a workstream is genuinely named `close` or `ask`, say what you read it as and
-confirm before acting.
+**LOOP MODE is a separate switch, and it is not a mode of its own.** The argument is,
+or contains as a standalone word, `loop` → **loop mode is on**. The session then runs
+OPEN mode or CLOSE mode exactly as above, and it also obeys **LOOP MODE** at the end of
+this file. `loop` composes with a slug, which scopes the run. Do not pair `loop` with
+`ask`: in loop mode a stop is an outcome block, and the block is what a machine reads.
+
+If a workstream is genuinely named `close`, `ask`, or `loop`, say what you read it as
+and confirm before acting.
 
 If the target project has no `STATUS.md` / `NEXT_SESSION.md` / `docs/history/`,
 stop and say so: it has not been scaffolded, and `/create-flywheel` is the skill for that.
@@ -219,6 +225,9 @@ wait indefinitely, and re-raising it is noise. The rule fires on the entry that
   for four closes"* is information the human does not otherwise have, and it is
   what tells them the framing has gone wrong.
 
+**In LOOP MODE this stop also writes a `decision` block**, and the options of the block
+are the options above. See **LOOP MODE** at the end of this file.
+
 ## 4. Work
 
 Ordinary engineering, with four standing rules:
@@ -342,6 +351,167 @@ thing that proves the pointer carries its own weight.
 If the human keeps working in the same context after a close, say once that the
 pointer has not been exercised and the next real cold start is still unverified.
 Do not repeat it.
+
+**In LOOP MODE the close ends with an outcome block, and the block is the last thing in
+the message.** Write the `/clear` sentence above it. A close that landed work writes a
+`continue` block. A close that landed nothing writes the block that states why. See
+**LOOP MODE** below.
+
+---
+
+# LOOP MODE — the session declares its own outcome
+
+**This section applies only when the argument carries the word `loop`.** Without that
+word the skill behaves exactly as it does above, and loop mode changes nothing. **The
+gate is the point: ordinary interactive use must not change.**
+
+**A human does not normally type `loop`.** A runner passes it — an agent that drives
+flywheel sessions unattended, with nobody at the keyboard. That runner reads the session
+and it cannot read prose. **The session therefore states the outcome of its turn, and the
+runner reads the statement.**
+
+## The rule
+
+**In loop mode the session never gives control back without an outcome block.** The
+block is the last thing in the message.
+
+To give control back is to declare an outcome. A message that asks the developer a
+question is a `decision`. A message that reports landed work is a `continue`. A message
+that reports no remaining work is a `done`. **There is no fourth outcome, and there is no
+outcome for work in progress.** A session that still works does not give control back, so
+it writes no block.
+
+Write no block while a tool call runs. Write no block in a message that continues the
+work. Write the block in the message that ends the turn.
+
+## The block
+
+The block is a fenced code block. The fence carries the info string
+`untethered-outcome`. The payload is one JSON object.
+
+**The block is the last fence in the message.** A reader takes the last matching fence
+and ignores every earlier fence. Write no text after the block.
+
+**The three forms below are normative for the shape, at version 1.** A runner that
+consumes these blocks may publish a contract document of its own; where it does, that
+document governs for that runner, and it must not contradict the forms below.
+
+### continue — the turn landed a unit of work
+
+```untethered-outcome
+{
+  "version": 1,
+  "outcome": "continue",
+  "story": "E02.1",
+  "landed": true,
+  "pointer": { "path": "NEXT_SESSION.md", "story": "E08.1", "rewritten": true }
+}
+```
+
+`story` names the unit that this turn landed. `pointer.story` names the unit for the next
+turn. The two fields differ. `pointer.path` is relative to the root of the repository.
+`pointer.rewritten` is true when the close rewrote the pointer whole.
+
+**Write `pointer.blockedBy` when the next unit cannot start.** The field is optional, and
+a next unit that is ready to build carries no field. **The field states what blocks the
+unit, in one sentence.** The machine stops the run on it, because a blocked next unit is
+no unambiguous next unit of work.
+
+```untethered-outcome
+{
+  "version": 1,
+  "outcome": "continue",
+  "story": "F01.3",
+  "landed": true,
+  "pointer": {
+    "path": "NEXT_SESSION.md",
+    "story": "F01.4",
+    "rewritten": true,
+    "blockedBy": "F01.4 waits on an open decision that the developer owns"
+  }
+}
+```
+
+⚠️ **Do not leave the field out because the pointer says the same thing in prose.** The
+machine reads the block and it does not read the pointer. **A block that names a blocked
+unit with no `blockedBy` starts that unit**, and a turn then builds work that a human
+already stopped.
+
+⚠️ **A blocked next unit is still a `continue` when this turn landed a unit of work.** The
+outcome describes what this turn did. `blockedBy` describes what the next turn cannot do.
+**Write `done` only when this turn landed nothing and nothing remains.**
+
+### decision — the turn reached a fork that the developer owns
+
+```untethered-outcome
+{
+  "version": 1,
+  "outcome": "decision",
+  "question": "Which unit does the next session build?",
+  "options": [
+    { "key": "1", "label": "E08.1, the JSONL journal" },
+    { "key": "2", "label": "E01.1, the configuration file" }
+  ]
+}
+```
+
+`question` states the fork in one sentence. `options` holds 2 items or more. A fork with
+one option is not a decision. Each `key` is a decimal digit. Number the options from `1`
+upward, in order. **The developer replies with the key from a phone**, so the label must
+identify the option without the message that carried it.
+
+### done — no unit of work remains
+
+```untethered-outcome
+{
+  "version": 1,
+  "outcome": "done",
+  "reason": "The phase gate needs a judgment that the developer owns."
+}
+```
+
+`reason` states why no unit of work remains.
+
+## Which outcome fires
+
+| The session | The outcome |
+|---|---|
+| lands a unit of work, and completes the close | `continue` |
+| lands a unit of work, and finds the next unit blocked | `continue`, with `pointer.blockedBy` |
+| stops at a choice, per **Presenting a decision** | `decision` |
+| finds a blocker, and nothing else is startable | `done` |
+| finds an empty backlog | `done` |
+| reaches a phase gate that needs a human judgment | `done` |
+
+**A stop and a fork are the same event.** Every stop that this skill names above is a
+`decision` block: two or more unblocked candidates, a divergence that changes the work, an
+open decision, a gate that is outward-facing, and a conflict between two decided
+documents. The options of the block are the options that **Presenting a decision**
+already asks for.
+
+**A blocker is not a fork.** A fork gives the developer a choice between two courses. A
+blocker leaves no course. A blocker is `done`, and `reason` names it.
+
+## The block does not replace the prose
+
+The session writes its ordinary report first. A human reads the report, and the report
+still names the options, the costs, and the recommendation. **The block repeats the
+machine-readable part of that report, and it adds nothing that the prose omits.** A block
+that disagrees with the prose above it is a defect.
+
+## What loop mode does not change
+
+Loop mode changes what the session **writes**. It changes nothing that the session
+**decides**.
+
+- The one-candidate test is unchanged. Loop mode does not lower the bar for an auto-start.
+- **The pick stays human.** A `decision` block reaches the developer by a message. It is
+  not a licence to pick.
+- A conflict between two decided documents still gets a memo, and the block that reports
+  it is a `decision`.
+- The close is unchanged. Every step of Part 1 and Part 2 runs before a `continue` block.
+- **Never fabricate an outcome.** A `continue` block on a turn that landed nothing is the
+  same failure as a wrong ✅, and the machine acts on it.
 
 ---
 
