@@ -20,6 +20,13 @@ gate to the developer. Where the two differ, this skill supersedes it; that is a
 documents, so it needs no memo. Refresh the project's `AGENTS.md` section at the next
 close if it is materially stale.
 
+**Know which version is governing before you rely on a rule that changed.** A project
+document may name a version this skill has not reached yet, and `AGENTS.md` cannot tell
+you which one is loaded. **Read the plugin's own manifest** — the `version` field of the
+`plugin.json` beside this skill, or the version directory in the plugin cache path. **If a
+project instruction is conditioned on a version, check it rather than assuming**: the
+skill that is running is the one that governs, not the one the project expects.
+
 ## Mode detection
 
 Match **whole words only** — the argument may also be a workstream slug, and a
