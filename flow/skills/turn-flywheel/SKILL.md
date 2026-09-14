@@ -15,10 +15,17 @@ the opening and the close — because those are what erode, and their failure is
 
 **This skill's text governs at runtime.** A project scaffolded by an earlier
 `/create-flywheel` may carry an older protocol in its `AGENTS.md` — one that says the
-session always stops for the pick, or waits to be told to close. Where the two differ,
-this skill supersedes it; that is a version skew, not a conflict between two decided
+session always stops for the pick, waits to be told to close, or hands every phase
+gate to the developer. Where the two differ, this skill supersedes it; that is a version skew, not a conflict between two decided
 documents, so it needs no memo. Refresh the project's `AGENTS.md` section at the next
 close if it is materially stale.
+
+**Know which version is governing before you rely on a rule that changed.** A project
+document may name a version this skill has not reached yet, and `AGENTS.md` cannot tell
+you which one is loaded. **Read the plugin's own manifest** — the `version` field of the
+`plugin.json` beside this skill, or the version directory in the plugin cache path. **If a
+project instruction is conditioned on a version, check it rather than assuming**: the
+skill that is running is the one that governs, not the one the project expects.
 
 ## Mode detection
 
@@ -185,8 +192,37 @@ name precisely which test failed and for which one, per **Presenting a decision*
 - The work needs an answer from the decision queue, or from `STATUS.md`'s open
   decisions.
 - Adopt-mode audit items awaiting disposition on the same surface.
-- The "unit" is a phase gate, a release, or anything outward-facing and hard to reverse.
+- The "unit" is a release, or anything outward-facing and hard to reverse. **A phase
+  gate is a stop only when a clause is unchecked, or when closing it is itself
+  outward-facing** — see **Closing a phase gate** below.
 - The `ask` argument was passed.
+
+### Closing a phase gate
+
+**The gate line is the conjunction of its clauses, not a separate judgment.** When
+every clause is `[x]`, a session marks the line ✅ — that is a reading of the boxes,
+not an inference about them. Announce it the way you announce a pick: say the phase,
+say that every clause is checked, say you are closing it. **The announcement is the
+developer's veto, so make it legible enough to interrupt.**
+
+**Judgment lives on the clauses, and that is where a human's attention belongs.**
+A clause a session cannot verify objectively — one phrased as something a *person*
+does, or one that weighs how good a piece of evidence is — **is checked by the
+developer, on the clause.** Take it to them as a choice, per **Presenting a
+decision**, and never check it yourself.
+
+**Still a stop, and these do not change:**
+
+- **Any unchecked clause.** One ⬜ and the gate is not closable by anyone yet.
+- **A clause you believe is wrongly checked.** Say so and stop; a wrong ✅ underneath
+  is worse than an open gate.
+- **A gate whose close is itself outward-facing** — it cuts a release, it deploys, it
+  tells somebody outside the team that a thing is done.
+
+**Why this is safe:** the rule against checking a clause by inference is unchanged,
+and it is what the line rests on. A gate is only as honest as its boxes. **If closing
+a gate feels like a judgment rather than a reading, that is a signal a clause was
+checked too generously — go back to the clause, not to the line.**
 
 ### Presenting a decision
 
@@ -332,7 +368,9 @@ available.
    direct evidence it is wrong, and say that you did.
 9. **Re-read the phase gate, clause by clause.** Check only clauses that are
    objectively true now. A clause phrased as something a *person* does is not
-   closed by a passing test suite.
+   closed by a passing test suite — **take that one to the developer, on the
+   clause.** **Then, if every clause is `[x]`, close the gate line in the same
+   commit and say so**, per **Closing a phase gate**.
 
 Then report the checklist explicitly: which of the nine were done, which were N/A
 and why. A silent skip is indistinguishable from a forgotten one.
@@ -466,7 +504,7 @@ identify the option without the message that carried it.
 {
   "version": 1,
   "outcome": "done",
-  "reason": "The phase gate needs a judgment that the developer owns."
+  "reason": "The phase gate holds a clause that the developer must check."
 }
 ```
 
@@ -481,7 +519,7 @@ identify the option without the message that carried it.
 | stops at a choice, per **Presenting a decision** | `decision` |
 | finds a blocker, and nothing else is startable | `done` |
 | finds an empty backlog | `done` |
-| reaches a phase gate that needs a human judgment | `done` |
+| reaches a phase gate holding a clause a session cannot verify | `done` |
 
 **A stop and a fork are the same event.** Every stop that this skill names above is a
 `decision` block: two or more unblocked candidates, a divergence that changes the work, an
@@ -520,8 +558,10 @@ Loop mode changes what the session **writes**. It changes nothing that the sessi
 - **Never fabricate a status.** ⬜ is better than a wrong ✅. A wrong ✅ costs a
   future session the time to discover it, plus the trust in every other row.
 - **Write every artifact in Simplified Technical English** — `../../reference/writing-style.md`. It governs the STATUS line, the history entry, the requirement row, the HANDBOOK entry, and the pointer; it does not govern what you say to the human, and it is never a reason to reword a decided document.
-- **Never mark a gate closed by inference.** Gates are written to be checked, not
-  reasoned about.
+- **Never mark a gate CLAUSE closed by inference.** Clauses are written to be
+  checked, not reasoned about. **The gate LINE is different — it is the conjunction
+  of its clauses**, so a session closes it when every clause is `[x]`. Reading the
+  boxes is not inferring from them.
 - **The close-out rides with the work, not with "the next commit."** That deferral
   is how the whole system degrades into three files nobody trusts.
 - **A stop is a choice, not a question.** Options, costs, and a recommendation with
@@ -530,8 +570,9 @@ Loop mode changes what the session **writes**. It changes nothing that the sessi
 - **The pick stays human whenever there is a pick to make.** One unambiguous
   candidate is not a choice, and stopping to ask about it just spends a human's
   attention on rubber-stamping. Two candidates, an open decision, or a divergence *is*
-  a choice — and those stop. Conflicts between two decided documents, and any gate
-  judgment call, stay human unconditionally.
+  a choice — and those stop. Conflicts between two decided documents, and **any gate
+  clause a session cannot verify objectively**, stay human unconditionally. **A gate
+  line whose clauses are all checked is not a judgment call and does not stop.**
 - **No self-invalidating facts in tracked files.** The test: **would the next
   ordinary action make this wrong?** Commit counts and HEAD SHAs fail it outright.
   **Record what is in flight, never a history of what was** — the branch and pull
