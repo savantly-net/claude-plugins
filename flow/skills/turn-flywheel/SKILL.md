@@ -259,12 +259,15 @@ A decision handed back as an open question is work handed back. Present it as a
   decisive is worse than none, and this system runs on a stated preference meaning
   something.
 
-**The choice ends the message.** Evidence first — the orientation, the verification
-table, what was found — then the options and the recommendation, and nothing after them.
-In a terminal the bottom of the message is what stays on screen; a choice placed above the
-evidence has scrolled away by the time the human reaches the end. Because a stop is not a
-close, no checklist and no `/clear` sentence may follow it. (In LOOP MODE the outcome block
-comes after and repeats the same options; the prose choice still sits directly above it.)
+**The last thing in the message is the next action.** In a terminal the bottom of the
+message is what stays on screen, so evidence goes first — the orientation, the verification
+table, what was found — and whatever the human does next goes last. When the session is
+waiting for an answer, that is the choice: options, recommendation, nothing after them.
+When the session has closed and the next action is `/clear`, the `/clear` sentence is last —
+even when the close's report presented choices above it, because those went into the
+pointer's queue for a later human and are not being asked now. A choice above a `/clear`
+sentence is a queued choice; a choice at the very end is a live one. (In LOOP MODE the
+outcome block comes after either and repeats it.)
 
 Where a structured choice prompt is available, use it, with the recommended option
 first. A recommendation is never a default: do not begin the recommended option while
@@ -418,9 +421,11 @@ turn run on remembered detail instead, so a thin or stale pointer still feels fi
 — and the rot surfaces weeks later, to whoever opens it cold. Clearing is the only
 thing that proves the pointer carries its own weight.
 
-**Never write the `/clear` sentence in a message that also asks the human a question.**
-The two cancel: a message cannot wait for an answer and tell the reader to discard the
-place the answer goes. If there is a question, it is a stop, and a stop is not a close.
+**Never write the `/clear` sentence in a message that is waiting for an answer.** The two
+cancel: a message cannot wait for an answer and tell the reader to discard the place the
+answer goes. A live question is a stop, and a stop is not a close. A close may still
+*report* choices — the ones it wrote into the pointer's queue — and end with `/clear`; the
+`/clear` sentence coming last is what marks them as queued rather than asked.
 
 If the human keeps working in the same context after a close, say once that the
 pointer has not been exercised and the next real cold start is still unverified.
