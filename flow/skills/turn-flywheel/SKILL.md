@@ -73,6 +73,16 @@ not opened cold, orientation is the step most likely to get skipped on the groun
 that you already know — which is exactly how a wrong pointer survives. Read, verify,
 and say plainly that this was not a cold start.
 
+### A dormant workstream
+
+**When the root index lists your workstream under Dormant, the open is a verify-and-report,
+not a session.** Run section 2 against the pointer, report the result in a few lines, and
+present anything the pointer's decision queue still holds as a choice. **Do not run CLOSE
+mode** — there is no unit, so there is no landing point, and a nine-step checklist of N/A
+is noise. Rewrite the pointer only when verification found a divergence; that rewrite is a
+commit, and it is the one thing a dormant open can land. If the human brings work, it is
+scope the pointer does not name — present it and stop, per **Presenting a decision**.
+
 ## 2. Verify before trusting — the load-bearing step
 
 The pointer records what was true at last close. **Humans work between sessions**,
@@ -197,6 +207,14 @@ name precisely which test failed and for which one, per **Presenting a decision*
   outward-facing** — see **Closing a phase gate** below.
 - The `ask` argument was passed.
 
+**A stop is not a close.** A stop ends the *turn*; the session stays open in this context
+and waits for the answer. Write no pointer, run no close checklist, and say nothing about
+`/clear` — the answer has to land somewhere, and a cleared context is not it. The close
+comes later, in the same context, once the answer has either produced work or gone into the
+pointer's decision queue for a later human. The one exception is a stop whose answer nobody
+can give now: then the question *is* the session's output, it goes into the queue, and the
+close runs on it. Say which of the two you are doing.
+
 ### Closing a phase gate
 
 **The gate line is the conjunction of its clauses, not a separate judgment.** When
@@ -240,6 +258,11 @@ A decision handed back as an open question is work handed back. Present it as a
 - **Say plainly when you have no grounds.** A recommendation invented to look
   decisive is worse than none, and this system runs on a stated preference meaning
   something.
+
+**The choice leads the message.** Put it at the top, before the verification table and
+the orientation report; the human reads for what they have to decide, and a
+recommendation under a table of green checks is a recommendation they scroll past. The
+evidence follows the choice, not the other way round.
 
 Where a structured choice prompt is available, use it, with the recommended option
 first. A recommendation is never a default: do not begin the recommended option while
@@ -296,6 +319,10 @@ of these is true:
 - **Context is materially consumed**, or a compaction has already happened. Landing
   early with an honest pointer beats being cut off mid-story with none.
 
+**Not a landing point:** a stop that is waiting for the human's answer (see **A stop is
+not a close**), and a dormant-workstream open whose verification came back clean (see
+**A dormant workstream**). The first stays open; the second reports and ends.
+
 **One unit of work per session.** After the close, the session is over — say so and
 stop. Do not open again in the same context, however much room is left: an auto-reopen
 would carry the warm context across the boundary and leave the pointer unexercised,
@@ -306,9 +333,12 @@ which is the whole thing the `/clear` exists to prevent.
 # CLOSE mode
 
 Two parts. Part 1 runs once per story that landed. Part 2 runs once per session,
-**including a session where nothing landed** — especially then, because a session
-that only discovered a blocker has produced the most valuable pointer update
-available.
+**including a session where nothing landed but something was learned** — a blocker, a
+divergence, an answer that went into the queue — because that session has produced the
+most valuable pointer update available. **It does not run for a session that learned
+nothing**: a dormant-workstream open with every verification step green, or a stop that
+is still waiting for its answer. A close that rewrites the pointer to say what it already
+said is not a close; it is a checklist with nothing under it.
 
 ## Part 1 — per story, in the same commit as the work
 
@@ -385,6 +415,10 @@ the next session starts from. A context carried across the boundary lets the nex
 turn run on remembered detail instead, so a thin or stale pointer still feels fine
 — and the rot surfaces weeks later, to whoever opens it cold. Clearing is the only
 thing that proves the pointer carries its own weight.
+
+**Never write the `/clear` sentence in a message that also asks the human a question.**
+The two cancel: a message cannot wait for an answer and tell the reader to discard the
+place the answer goes. If there is a question, it is a stop, and a stop is not a close.
 
 If the human keeps working in the same context after a close, say once that the
 pointer has not been exercised and the next real cold start is still unverified.
