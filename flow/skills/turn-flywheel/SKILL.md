@@ -259,10 +259,12 @@ A decision handed back as an open question is work handed back. Present it as a
   decisive is worse than none, and this system runs on a stated preference meaning
   something.
 
-**The choice leads the message.** Put it at the top, before the verification table and
-the orientation report; the human reads for what they have to decide, and a
-recommendation under a table of green checks is a recommendation they scroll past. The
-evidence follows the choice, not the other way round.
+**The choice ends the message.** Evidence first — the orientation, the verification
+table, what was found — then the options and the recommendation, and nothing after them.
+In a terminal the bottom of the message is what stays on screen; a choice placed above the
+evidence has scrolled away by the time the human reaches the end. Because a stop is not a
+close, no checklist and no `/clear` sentence may follow it. (In LOOP MODE the outcome block
+comes after and repeats the same options; the prose choice still sits directly above it.)
 
 Where a structured choice prompt is available, use it, with the recommended option
 first. A recommendation is never a default: do not begin the recommended option while
