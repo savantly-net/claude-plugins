@@ -432,9 +432,10 @@ pointer has not been exercised and the next real cold start is still unverified.
 Do not repeat it.
 
 **In LOOP MODE the close ends with an outcome block, and the block is the last thing in
-the message.** Write the `/clear` sentence above it. A close that landed work writes a
-`continue` block. A close that landed nothing writes the block that states why. See
-**LOOP MODE** below.
+the message.** Write the `/clear` sentence above it. A close that landed work and named the
+next unit writes a `continue` block. A close that landed the LAST unit writes a `done` block
+that carries `story` and `landed`. A close that landed nothing writes the block that states
+why. See **LOOP MODE** below.
 
 ---
 
@@ -455,8 +456,9 @@ runner reads the statement.**
 block is the last thing in the message.
 
 To give control back is to declare an outcome. A message that asks the developer a
-question is a `decision`. A message that reports landed work is a `continue`. A message
-that reports no remaining work is a `done`. **There is no fourth outcome, and there is no
+question is a `decision`. A message that reports landed work and names the next unit is a
+`continue`. A message that reports no remaining work is a `done`, and it states the unit it
+landed when it landed one. **There is no fourth outcome, and there is no
 outcome for work in progress.** A session that still works does not give control back, so
 it writes no block.
 
@@ -518,7 +520,11 @@ already stopped.
 
 ⚠️ **A blocked next unit is still a `continue` when this turn landed a unit of work.** The
 outcome describes what this turn did. `blockedBy` describes what the next turn cannot do.
-**Write `done` only when this turn landed nothing and nothing remains.**
+
+⚠️ **A turn that lands the LAST unit of a backlog writes `done` and not `continue`**, because
+`continue` requires `pointer.story` to name the next unit and there is no next unit to name.
+**That `done` carries `story` and `landed`**, so the record of what the turn landed is not
+lost. See the `done` form below.
 
 ### decision — the turn reached a fork that the developer owns
 
@@ -551,6 +557,23 @@ identify the option without the message that carried it.
 
 `reason` states why no unit of work remains.
 
+**A `done` that landed a unit of work carries `story` and `landed` as well.** Both fields are
+optional, they mean what they mean on a `continue`, and a `done` that landed nothing carries
+neither.
+
+```untethered-outcome
+{
+  "version": 1,
+  "outcome": "done",
+  "story": "E08.3",
+  "landed": true,
+  "reason": "E08.3 was the last unit of the backlog and nothing remains."
+}
+```
+
+⚠️ **A `done` carries no `pointer` object**, because there is no next unit for a pointer to
+name. The close still rewrites the pointer, and the block does not report it.
+
 ## Which outcome fires
 
 | The session | The outcome |
@@ -560,6 +583,7 @@ identify the option without the message that carried it.
 | stops at a choice, per **Presenting a decision** | `decision` |
 | finds a blocker, and nothing else is startable | `done` |
 | finds an empty backlog | `done` |
+| lands the LAST unit of the backlog, and nothing remains | `done`, with `story` and `landed` |
 | reaches a phase gate holding a clause a session cannot verify | `done` |
 
 **A stop and a fork are the same event.** Every stop that this skill names above is a
