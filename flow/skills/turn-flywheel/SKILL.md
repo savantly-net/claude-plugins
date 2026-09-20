@@ -78,7 +78,7 @@ and say plainly that this was not a cold start.
 **When the root index lists your workstream under Dormant, the open is a verify-and-report,
 not a session.** Run section 2 against the pointer, report the result in a few lines, and
 present anything the pointer's decision queue still holds as a choice. **Do not run CLOSE
-mode** — there is no unit, so there is no landing point, and a nine-step checklist of N/A
+mode** — there is no unit, so there is no landing point, and a ten-step checklist of N/A
 is noise. Rewrite the pointer only when verification found a divergence; that rewrite is a
 commit, and it is the one thing a dormant open can land. If the human brings work, it is
 scope the pointer does not name — present it and stop, per **Presenting a decision**.
@@ -407,7 +407,18 @@ said is not a close; it is a checklist with nothing under it.
    clause.** **Then, if every clause is `[x]`, close the gate line in the same
    commit and say so**, per **Closing a phase gate**.
 
-Then report the checklist explicitly: which of the nine were done, which were N/A
+10. **Report where the plan stands.** Count the story lines of `STATUS.md` and write one line:
+    **how many stories are done, how many remain, how many of those are blocked, and how many
+    open criteria need a person** (the 👤 ones). Put it in the pointer's goal section and say it
+    in the close. **Derive it by counting, never by carrying a number forward** — a count
+    written into a tracked file goes stale at the next landing, which the no-self-invalidating-facts
+    rule already forbids.
+
+    ⚠️ **A story at 🟨 is not done.** Count it as remaining and say which half is open. **The
+    number that matters to a developer is not "how much is ticked" but "how much can a session
+    still start on its own"** — so report the blocked count and the 👤 count beside the total.
+
+Then report the checklist explicitly: which of the ten were done, which were N/A
 and why. A silent skip is indistinguishable from a forgotten one.
 
 ## Last line of a close: tell the human to `/clear`
@@ -488,6 +499,28 @@ document governs for that runner, and it must not contradict the forms below.
   "pointer": { "path": "NEXT_SESSION.md", "story": "E08.1", "rewritten": true }
 }
 ```
+
+**`progress` is optional and it says where the plan stands.** It carries `done`, `remaining`,
+`blocked` and `needsPerson`, each an integer counted from `STATUS.md` at the close. A runner
+displays it; a session that cannot count them writes no field. **The field is optional, so it
+raises no version** — a producer that never writes it keeps writing blocks that every reader
+accepts.
+
+```untethered-outcome
+{
+  "version": 1,
+  "outcome": "continue",
+  "story": "E02.1",
+  "landed": true,
+  "progress": { "done": 34, "remaining": 12, "blocked": 2, "needsPerson": 4 },
+  "pointer": { "path": "NEXT_SESSION.md", "story": "E08.1", "rewritten": true }
+}
+```
+
+⚠️ **`done` plus `remaining` is the whole backlog, and `blocked` and `needsPerson` are subsets
+of `remaining`.** They overlap, so **do not add them up.**
+
+**`progress` rides a `done` block too**, where it reports the state the run finished in.
 
 `story` names the unit that this turn landed. `pointer.story` names the unit for the next
 turn. The two fields differ. `pointer.path` is relative to the root of the repository.

@@ -43,11 +43,35 @@ Dependencies: [other epics this depends on]
 **Acceptance Criteria:**
 - [ ] [specific, testable criterion]
 - [ ] [another criterion]
+- [ ] 👤 [a criterion only a person can verify — mark it, and say what the person does]
 **Dependencies:** [other stories or epics this blocks on]
 **Notes:** [any implementation hints, edge cases, or warnings]
 ```
 
 Keep stories small enough to be implementable in a focused session but large enough to be meaningful. If a story feels too big, split it. If it feels trivial, merge it.
+
+### Every criterion names what verifies it, and a machine is the default
+
+**Write each criterion so that a test can close it.** A session builds the story, runs the
+suite, and ticks the box. That is the loop the flywheel runs, and a criterion a machine cannot
+reach steps out of it.
+
+**Reach in this order:** a unit test, then an integration test, then a scripted check against
+the database or the API, then a person. **Stop at the first one that can see the effect.**
+
+**Mark a criterion that needs a person with 👤 when you write it**, and say what the person
+does. A marked criterion is countable, so the plan can state how much of itself depends on
+somebody being at the keyboard. **An unmarked one is discovered at the close**, when a session
+has already built the story and cannot tick the box.
+
+**State an artefact, not a property.** "The install takes under 30 minutes" needs a person with
+a stopwatch. "`README.md` lists every install step, and a test asserts the script exits 0 on a
+clean checkout" needs a file. **The second is usually available, and it is usually the thing
+the first was really asking about.**
+
+⚠️ **Some criteria genuinely need a person** — a judgment about whether a message reads well, a
+timing a human experiences, a visual check. **Do not contort those into fake tests.** Mark them,
+count them, and let the developer see the total before the plan is agreed.
 
 For post-MVP items, create a separate summary list of deferred epics/stories (no full detail needed).
 
@@ -168,7 +192,9 @@ Phases should be ordered so that:
 1. Early phases deliver a working (if limited) end-to-end flow as soon as possible
 2. Later phases add breadth, scale, and polish
 3. Spikes are front-loaded or run in parallel with early phases
-4. Each phase gate is objectively verifiable
+4. Each phase gate is objectively verifiable, **and each clause names what verifies it** — a
+   clause only a person can check is marked 👤, because the flywheel will stop on it and hand
+   it to the developer
 
 Present and ask: "Does this phasing make sense? Want to reorder anything or adjust the phase gates?"
 
