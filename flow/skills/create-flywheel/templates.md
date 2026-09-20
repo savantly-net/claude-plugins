@@ -187,13 +187,16 @@ These apply to every tracked file: requirements, ACs, designs, `STATUS.md` lines
 - Noun clusters of three words maximum. Keep articles. Present tense. No `-ing` form where a finite verb works.
 - One obligation per requirement row (`must` / `must not` / `should`); one testable condition per AC.
 - Specific quantities with units. "About", "quickly", and "as needed" are defects in a requirement.
+- **State an artefact, not a property.** "The run is safe" invites a demonstration, and a demonstration invites a person. "A test asserts that no path populates `updatedPermissions`" names a file somebody can open.
+- **An acceptance criterion names what verifies it.** A criterion whose verifier is a person is marked when it is written, never discovered at the close.
 - **Not governed:** conversation with a human, quoted material (gates, vendor terms, error strings), and existing text — a decided document's wording is someone's decision and is amended by appending, never restyled.
 
 ## Test rules
 
 - The pure core first, then the IO. A fact the machine needs is a required argument, not a default.
 - Mutation-test every load-bearing guard and record the real number.
-- A human click-through, recorded in the story's `docs/history/` entry, verified against the DB. **Say what you could not exercise.**
+- **A test the machine runs is the default, and a person is the fallback.** Reach for a unit or integration test first, then a scripted check against the DB or the API, then a person. **Name the fallback as a fallback** — a criterion that needs a person is a criterion that waits for one.
+- A human click-through, recorded in the story's `docs/history/` entry, verified against the DB. **Use it when nothing automated can reach the effect.** **Say what you could not exercise.**
 - A fake external service must be as awkward as the real one.
 
 ## Framework & tooling traps — these have all cost real time
