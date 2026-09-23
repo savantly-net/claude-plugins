@@ -100,7 +100,7 @@ The first three are **long interactive sessions**, not one-shot generators. Each
 ```
 /flow:create-spec docs/charter.md          # → requirements/, architecture/, ADRs, open-questions.md
 /flow:create-blueprint projects/thing/     # → plan/: MVP scope, epics, designs, phases
-/flow:create-flywheel projects/thing/      # → STATUS.md, docs/history/, pointers, AGENTS.md protocol
+/flow:create-flywheel projects/thing/      # → STATUS.md, HANDBOOK, pointers, AGENTS.md protocol
 /flow:turn-flywheel                        # → first session opens
 ```
 
@@ -126,7 +126,7 @@ Once a project is scaffolded, `turn-flywheel` is the only one you type regularly
 /flow:turn-flywheel                # start of session: orient, verify, then start the next story — or stop for your pick
 ...ordinary engineering...
                                    # the close fires by itself when the story lands:
-                                   # STATUS line, history entry, requirement rows, rewrite the pointer
+                                   # STATUS line, requirement rows, design amendments, rewrite the pointer
 /clear                             # then wipe the context — the next turn must cold-start from the pointer
 ```
 
@@ -134,13 +134,13 @@ Once a project is scaffolded, `turn-flywheel` is the only one you type regularly
 
 **When it stops, it stops with a choice.** Every stop — the pick between candidates, a divergence needing a disposition, an item going into the pointer's decision queue — comes as two or three named options, what each costs and unblocks, and a recommendation with its reasoning where there are grounds for one. It says plainly when there aren't. A recommendation is never a default: it won't start the recommended option while waiting on you.
 
-**It closes itself.** The close isn't a command you have to remember: it fires when the story's ACs are met and the work is about to be committed (that commit carries the STATUS line and the history entry), when a blocker halts the work with nothing else startable, or when the context is materially consumed. One unit of work per session — after the close the session is over and doesn't reopen in the same context. `/flow:turn-flywheel close` still works when you want to land early.
+**It closes itself.** The close isn't a command you have to remember: it fires when the story's ACs are met and the work is about to be committed (that commit carries the STATUS line and the requirement rows), when a blocker halts the work with nothing else startable, or when the context is materially consumed. One unit of work per session — after the close the session is over and doesn't reopen in the same context. `/flow:turn-flywheel close` still works when you want to land early.
 
 **Close every session, including the ones where nothing landed.** A session that only discovered a blocker produces the most valuable pointer update available — and skipping the close is the single thing that degrades the whole system into three files nobody trusts.
 
 **Then `/clear`.** This isn't just about keeping the context window lean, though it does that. The pointer only works if it is genuinely the thing the next session starts from. Carry a warm context across the boundary and the next turn quietly runs on remembered detail instead — so a pointer that is thin, stale, or wrong still *feels* fine, and you find out weeks later when someone else opens it cold. Clearing is what proves the pointer carries its own weight.
 
-It also keeps the close honest in the other direction: if you can still see the whole session, it's tempting to write a thin history entry because everything is obviously in your head. It won't be tomorrow.
+It also keeps the close honest in the other direction: if you can still see the whole session, it's tempting to skip the rejected option or the untested path because everything is obviously in your head. It won't be tomorrow.
 
 ### You don't have to run the whole pipeline
 
@@ -154,31 +154,30 @@ Seven roles, one fact in one home:
 |---|---|
 | `requirements/*.md` | The spec, with a per-row Status column |
 | `STATUS.md` | Phases, gates, spikes, infra, open decisions |
-| `docs/history/<story-id>.md` | One file per story: decisions, **rejected options**, traps, numbers, **what was NOT exercised** |
 | `<workstream>/NEXT_SESSION.md` | Session state only — the goal, the decision queue, the baseline (branch and PR, never commit counts) |
 | Root `NEXT_SESSION.md` | Index of active workstreams, one line each |
 | `docs/HANDBOOK.md` | Standing knowledge — traps, conventions, how to run things |
+| `docs/limits.json` | A byte cap for each tracked document, enforced by a test |
 | `plan/epics/*.md` | Frozen spec + dated amendments |
 
 ## Working in parallel
 
-The flywheel was originally extracted from a solo project. Two changes make it safe for a team:
+The flywheel was originally extracted from a solo project. One change makes it safe for a team:
 
 **One `NEXT_SESSION.md` per workstream, plus a root index.** The pointer is rewritten *wholesale* at every session close, which is the worst possible input to a git merge — so two developers must never share one. Separation comes from one pointer per stream.
 
-**One `docs/history/` file per story**, not one shared append-only log. Two developers landing two stories touch two different files, so the narrative never conflicts.
+**Pointers are committed. Never gitignore them.** It's tempting — they look like scratch state. But the pointer holds the *decision queue*, which is a queue a human is supposed to read, and an untracked pointer makes a handoff (vacation, review, someone picking up your stream) impossible at exactly the moment the accumulated context is worth the most.
 
-**Both are committed. Never gitignore them.** It's tempting — they look like scratch state. But the pointer holds the *decision queue*, which is a queue a human is supposed to read, and an untracked pointer makes a handoff (vacation, review, someone picking up your stream) impossible at exactly the moment the accumulated context is worth the most.
+## Where the reasoning lives
 
-## Why `docs/history/` exists when `git log` exists
+Git records what happened. Two things it can't record, and the close writes them where a reader already looks:
 
-Git records what happened. These files record what *didn't*:
+- **Rejected options** — work that was considered and refused leaves no commit and no diff. It goes into the design doc as a dated `Rejected:` line, under the section it constrains, because that's what the next session reads before taking the obvious approach.
+- **What was NOT exercised** — the negative space around a story's testing. It goes into the pull request body beside the deploy impact, and into the commit message.
 
-- **Rejected options** — work that was considered and refused leaves no commit and no diff. It is invisible to git by construction, and it's the first thing a future session re-litigates from scratch.
-- **What was NOT exercised** — the negative space around a story's testing. Nobody writes it in a commit message and no diff reveals it.
-- **The numbers as of then** — test and mutation counts at the moment the story landed.
+The reasoning for a requirement amendment goes into the PR body and the commit message that make it. `git blame` on the row finds the commit, and the PR survives a squash merge. A story with nothing rejected and nothing untested writes nothing extra.
 
-Also practical: squash-merge workflows flatten per-commit granularity anyway, and an agent scanning months of `git log` burns context that a targeted `STATUS.md` line → history file read does not.
+Earlier versions wrote a `docs/history/<story-id>.md` narrative at every landing. Most of it repeated the STATUS line, the design doc and the PR, and it was rarely read — so it's gone. A project that already has one keeps it as a read-only record.
 
 ## Contributing
 

@@ -1,8 +1,8 @@
 # Writing style for generated artifacts
 
 Every file these skills write to disk follows the rules below: requirements, acceptance
-criteria, architecture and design docs, ADRs, epics, spikes, `STATUS.md`, history
-entries, `HANDBOOK.md`, and the `NEXT_SESSION.md` pointers.
+criteria, architecture and design docs, ADRs, epics, spikes, `STATUS.md`, `Rejected:`
+lines, `HANDBOOK.md`, and the `NEXT_SESSION.md` pointers.
 
 The rules are the enforceable core of **ASD-STE100 Simplified Technical English**. That
 specification also carries an approved dictionary of about 900 words, which a session
