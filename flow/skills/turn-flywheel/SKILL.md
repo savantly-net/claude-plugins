@@ -1,6 +1,6 @@
 ---
 name: turn-flywheel
-description: Turn the session flywheel — open a session (orient from the workstream's NEXT_SESSION.md, verify its claims against the code, then start the next unit of work when exactly one is live, or propose when there is a real choice) or close one (the landing ritual: STATUS line, per-story history entry, requirement rows, design amendments, then rewrite the pointer). Use at the start of a session on a flywheel project; the close fires by itself when the work lands. Companion to /create-flywheel, which installs the process. LOOP MODE, the `loop` argument, makes the session declare the outcome of its own turn in a machine-readable block, so a runner can drive sessions unattended.
+description: Turn the session flywheel — open a session (orient from the workstream's NEXT_SESSION.md, verify its claims against the code, then start the next unit of work when exactly one is live, or propose when there is a real choice) or close one (the landing ritual: STATUS line, requirement rows, design amendments with any rejected option, then rewrite the pointer). Use at the start of a session on a flywheel project; the close fires by itself when the work lands. Companion to /create-flywheel, which installs the process. LOOP MODE, the `loop` argument, makes the session declare the outcome of its own turn in a machine-readable block, so a runner can drive sessions unattended.
 argument-hint: [workstream-slug] | close | ask | loop
 ---
 
@@ -48,7 +48,7 @@ this file. `loop` composes with a slug, which scopes the run. Do not pair `loop`
 If a workstream is genuinely named `close`, `ask`, or `loop`, say what you read it as
 and confirm before acting.
 
-If the target project has no `STATUS.md` / `NEXT_SESSION.md` / `docs/history/`,
+If the target project has no `STATUS.md` / `NEXT_SESSION.md`,
 stop and say so: it has not been scaffolded, and `/create-flywheel` is the skill for that.
 
 ---
@@ -161,10 +161,11 @@ parallel, and there is almost always something. A story built on an unanswered
 spike is rework with extra steps.
 
 Then read, for the candidate only: its epic entry (the AC checkboxes are the
-definition of done), its design doc, and its `docs/history/<story-id>.md` entry if
-one exists. If the story touches a surface another story already built, read that
-story's history entry too — its **rejected options** section is where you find out
-why the obvious approach was already refused.
+definition of done) and its design doc. **Read the design doc's `Rejected:` lines** —
+they are where you find out why the obvious approach was already refused. If the
+story touches a surface another story already built, read that surface's design doc
+too. A legacy `docs/history/<story-id>.md` from an earlier version is read the same
+way, if one exists; never write a new one.
 
 ### The one-candidate test
 
@@ -304,7 +305,7 @@ Ordinary engineering, with four standing rules:
 - **Note traps as you hit them.** They go to `docs/HANDBOOK.md` at close, not into
   the pointer — into the entry that already covers the concept, when there is one.
 - **Never widen a result type, gate, or guarantee silently.** If pressure to do so
-  appears, it belongs in the story's `docs/history/` entry as a rejected option.
+  appears, refuse it and record the refusal as a `Rejected:` line in the design doc.
 - **Know what landing the work does before you land it.** Re-read the guard in
   section 2. **A session never merges a branch that touches migrations**, and it
   says the deploy impact out loud — in the pull request body, and to the human —
@@ -349,17 +350,23 @@ said is not a close; it is a checklist with nothing under it.
 
 1. **`STATUS.md` line** — check the box, add the date and a one-line gist. Blocked
    → 🚫 with the blocker named. Partially landed → 🟨 with the open half named.
-2. **`docs/history/<story-id>.md`** — write the narrative in its own file (template
-   in `create-flywheel`'s `templates.md`). Mandatory content: what landed · the
-   decisions and why · **the options considered and rejected** · traps hit ·
-   test/mutation numbers · click-through results · **and what was NOT exercised,
-   named plainly.** An unnamed gap is a claim that none exists, and that claim is
-   usually false. The rejected options and the unexercised paths are the two things
-   `git log` can never recover — a thin entry here is the whole file wasted.
+2. **Record the two facts git cannot recover — and nothing else.** There is no
+   per-story history file; the STATUS line, the design doc, the handbook and the
+   pull request already hold the rest.
+   - **A rejected option** → a dated `Rejected: <option> — <why>` line in the design
+     doc, under the section it constrains. That is where the next session looks
+     before it takes the obvious approach.
+   - **What was NOT exercised** → named plainly in the pull request body, beside the
+     deploy impact, and in the commit message. An unnamed gap is a claim that none
+     exists, and that claim is usually false. A gap that outlives the story is also a
+     🟨 on the STATUS line or a note at the function that carries it.
+
+   No rejected option and no gap → write nothing extra. Do not pad.
 3. **Requirement rows** — update Status on every affected FR/NFR. A
    requirement-level change (a loosened gate, a deferred clause) is a **dated
    amendment on the row itself, one sentence for the decision**; the reasoning
-   goes to `docs/history/`, never onto the row. A design doc may carry the
+   goes to the commit message that makes the amendment, never onto the row —
+   `git blame` on the row finds it. A design doc may carry the
    reasoning; it must never contradict the row.
 4. **Design docs** — amend any that diverged, in both directions.
 5. **Epic file** — if the *spec* diverged rather than the status, add a dated
@@ -411,8 +418,8 @@ said is not a close; it is a checklist with nothing under it.
    **A knowledge file is corrected by replacement, never by a dated amendment**:
    the handbook, `STATUS.md`, `AGENTS.md`, design docs, the pointer. Write what
    is true now, and let git hold the sentence you replaced. Requirement rows,
-   ADRs, epic files and `docs/history/` entries are the exception and keep the
-   dated amendment.
+   ADRs and epic files are the exception and keep the dated amendment. A design
+   doc's `Rejected:` line is replaced when the option is taken up.
 8. **Root `NEXT_SESSION.md` index** — update this workstream's line if its state
    changed. Other workstreams' lines are theirs; correct one only if you have
    direct evidence it is wrong, and say that you did.
@@ -670,7 +677,7 @@ Loop mode changes what the session **writes**. It changes nothing that the sessi
 
 - **Never fabricate a status.** ⬜ is better than a wrong ✅. A wrong ✅ costs a
   future session the time to discover it, plus the trust in every other row.
-- **Write every artifact in Simplified Technical English** — `../../reference/writing-style.md`. It governs the STATUS line, the history entry, the requirement row, the HANDBOOK entry, and the pointer; it does not govern what you say to the human, and it is never a reason to reword a decided document.
+- **Write every artifact in Simplified Technical English** — `../../reference/writing-style.md`. It governs the STATUS line, the `Rejected:` line, the requirement row, the HANDBOOK entry, and the pointer; it does not govern what you say to the human, and it is never a reason to reword a decided document.
 - **Never mark a gate CLAUSE closed by inference.** Clauses are written to be
   checked, not reasoned about. **The gate LINE is different — it is the conjunction
   of its clauses**, so a session closes it when every clause is `[x]`. Reading the
@@ -699,6 +706,6 @@ Loop mode changes what the session **writes**. It changes nothing that the sessi
   to tell the close's own pull request from somebody else's work.**
 - **Do not install tooling, boards, or trackers.** This is files-in-git by design;
   status updates ride the same commits as the work they describe.
-- **Stay in your own lane.** One pointer per workstream, one history file per story.
+- **Stay in your own lane.** One pointer per workstream.
   If you are about to edit a file another workstream owns, that is the signal to
   stop and say so — not to merge on their behalf.

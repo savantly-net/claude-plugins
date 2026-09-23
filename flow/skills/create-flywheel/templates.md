@@ -21,9 +21,9 @@ Add a `Status` column to every table; initialize per mode (⬜ **Open** for gree
 ```markdown
 # <project> — Build Status
 
-> Concise tracker for all planned work. *What* each item is: `plan/` (epics, spikes, phases) and `design/`. **Requirement-level status lives in the tracked tables in `requirements/`** — this file holds what those rows can't: phases, gates, spikes, infrastructure, open decisions, and the story one-liners. *How it was built and why*: `docs/history/<story-id>.md`, one file per story. **Opening a story means reading its history file and its design doc, not just its line here.** Follow shipped code over a stale doc — then amend the doc in the same commit. Standing knowledge: `docs/HANDBOOK.md`.
+> Concise tracker for all planned work. *What* each item is: `plan/` (epics, spikes, phases) and `design/`. **Requirement-level status lives in the tracked tables in `requirements/`** — this file holds what those rows can't: phases, gates, spikes, infrastructure, open decisions, and the story one-liners. *Why it was built this way*: the design doc, with its dated `Rejected:` lines, and the landing commit. **Opening a story means reading its design doc, not just its line here.** Follow shipped code over a stale doc — then amend the doc in the same commit. Standing knowledge: `docs/HANDBOOK.md`.
 >
-> When a story lands: check the box here with the date and a one-line gist; write `docs/history/<story-id>.md`; update the requirement rows.
+> When a story lands: check the box here with the date and a one-line gist; a rejected option goes to the design doc as a dated `Rejected:` line; what was not exercised goes to the pull request body and the commit message; update the requirement rows.
 >
 > **No self-invalidating facts here or in a pointer** — no commit counts, no HEAD SHAs, and no list of spent branch names. This file is committed *after* it is written, so a count is wrong by one before anyone reads it. Name the branch and pull request that are **in flight**, and the last landed story ID; send the reader to `git branch --merged` for what is spent.
 >
@@ -63,55 +63,7 @@ Gate: <gate conditions from plan/phases.md, verbatim>
 <one-line list>
 ```
 
-## 3. `docs/history/README.md` (the convention stub)
-
-```markdown
-# <project> — Build History
-
-> **One file per story: `docs/history/<story-id>.md`.** Written in the same commit as the work it describes. Phase-gate narratives use `docs/history/phase-<n>-gate.md`.
->
-> **Why these files exist when `git log` already exists:** git records what happened. These record what *didn't* — the options considered and **rejected** (which leave no commit and no diff), the paths **not exercised**, and the numbers as of that moment. That is the half a future session would otherwise pay to rediscover.
->
-> One file per story rather than one shared log is deliberate: two developers landing two stories touch two different files, so this directory never produces a merge conflict.
->
-> Never edit a landed entry to make it look better. Corrections are appended, dated.
-```
-
-Per-story entry template:
-
-```markdown
-# <story-id> — <title>
-
-**Landed** <date> · **Phase** <n> · **Requirements** <FR/NFR ids> · **Owner** <name>
-
-## What landed
-
-<what now exists that didn't before, in terms a reader can verify against the code>
-
-## Decisions and why
-
-<each decision, its reasoning, and the alternative it beat>
-
-## Rejected options
-
-<what was considered and refused, and why — including any pressure to widen a result type, gate, or guarantee. This section is the reason this file exists; "none" is a valid answer only if it is true.>
-
-## Traps hit
-
-<what cost real time. Anything that will bite again goes to docs/HANDBOOK.md in this same commit.>
-
-## Verification
-
-- Tests: <numbers, from exit codes — not from memory>
-- Mutation: <numbers for load-bearing guards>
-- Click-through: <what a human actually did, and what the DB showed afterward>
-
-## What was NOT exercised
-
-<named plainly. An unnamed gap is a claim that none exists, and that claim is usually false.>
-```
-
-## 4. Root `NEXT_SESSION.md` (the workstream index)
+## 3. Root `NEXT_SESSION.md` (the workstream index)
 
 ```markdown
 # Active Workstreams
@@ -127,12 +79,12 @@ Per-story entry template:
 <workstreams that are paused, with the date and why — so a reader knows they are not simply forgotten>
 ```
 
-## 5. Workstream `NEXT_SESSION.md` initial
+## 4. Workstream `NEXT_SESSION.md` initial
 
 ```markdown
 # Next Session — <workstream>
 
-> **This is a pointer, not a log and not a handbook.** It holds only *session state*: the goal, the human's decision queue, live workspace/infra state, and the baseline. Everything durable lives where it belongs — **standing knowledge: `docs/HANDBOOK.md`** · requirement status: `requirements/` (tracked tables) · phases/gates/stories/infra: `STATUS.md` · per-story narrative: `docs/history/<story-id>.md` · history: `git log`. Rewrite this file at the end of each session; if you are writing knowledge into it, you are writing it in the wrong file.
+> **This is a pointer, not a log and not a handbook.** It holds only *session state*: the goal, the human's decision queue, live workspace/infra state, and the baseline. Everything durable lives where it belongs — **standing knowledge: `docs/HANDBOOK.md`** · requirement status: `requirements/` (tracked tables) · phases/gates/stories/infra: `STATUS.md` · why a design is what it is: the design doc's `Rejected:` lines · history: `git log`. Rewrite this file at the end of each session; if you are writing knowledge into it, you are writing it in the wrong file.
 >
 > **This pointer belongs to one workstream.** It is rewritten wholesale at every close, so a second developer must get their own — never share one.
 >
@@ -160,7 +112,7 @@ Per-story entry template:
 (test/lint/build state, recorded from exit codes — established in the first working session)
 ```
 
-## 6. `docs/HANDBOOK.md` seed
+## 5. `docs/HANDBOOK.md` seed
 
 ```markdown
 # <project> — Session Handbook (standing knowledge)
@@ -179,7 +131,7 @@ Per-story entry template:
 
 ## Writing rules for these documents
 
-These apply to every tracked file: requirements, ACs, designs, `STATUS.md` lines, `docs/history/` entries, and the pointer. They are the enforceable core of **ASD-STE100 Simplified Technical English** — the approved dictionary is not applied, so do not claim conformance.
+These apply to every tracked file: requirements, ACs, designs, `STATUS.md` lines, and the pointer. They are the enforceable core of **ASD-STE100 Simplified Technical English** — the approved dictionary is not applied, so do not claim conformance.
 
 - One topic per sentence. Instructions 20 words or fewer; descriptive text 25 or fewer. Six sentences per paragraph.
 - Active voice, with the actor named. A passive requirement hides who is responsible.
@@ -195,8 +147,8 @@ These apply to every tracked file: requirements, ACs, designs, `STATUS.md` lines
 
 `docs/limits.json` names a byte cap for each tracked document, and the cap check fails when a file is above it. **To add text to a capped file, remove as much text as you add.** A session that compacts a file lowers its cap in the same commit. A session that raises a cap says so in its report.
 
-- **A decision of record keeps the dated amendment**, one sentence for the decision: requirement rows, ADRs, epic files, `docs/history/` entries. The reasoning goes to `docs/history/`, never onto the row.
-- **A knowledge file and a state file are corrected by replacement**: this handbook, `STATUS.md`, `AGENTS.md`, design docs, the pointer. Write what is true now; git holds the sentence you replaced.
+- **A decision of record keeps the dated amendment**, one sentence for the decision: requirement rows, ADRs, epic files. The reasoning goes to the commit message that makes the amendment, never onto the row; `git blame` on the row finds it.
+- **A knowledge file and a state file are corrected by replacement**: this handbook, `STATUS.md`, `AGENTS.md`, design docs, the pointer. A design doc's `Rejected:` line stays until the option is taken up; then replace it. Write what is true now; git holds the sentence you replaced.
 
 **Before you write a section here, grep this file for the concept's nouns.** An entry that exists is corrected in place. A trap that a test or a type now pins shrinks to one line naming the test.
 
@@ -205,7 +157,7 @@ These apply to every tracked file: requirements, ACs, designs, `STATUS.md` lines
 - The pure core first, then the IO. A fact the machine needs is a required argument, not a default.
 - Mutation-test every load-bearing guard and record the real number.
 - **A test the machine runs is the default, and a person is the fallback.** Reach for a unit or integration test first, then a scripted check against the DB or the API, then a person. **Name the fallback as a fallback** — a criterion that needs a person is a criterion that waits for one.
-- A human click-through, recorded in the story's `docs/history/` entry, verified against the DB. **Use it when nothing automated can reach the effect.** **Say what you could not exercise.**
+- A human click-through, recorded in the pull request body, verified against the DB. **Use it when nothing automated can reach the effect.** **Say what you could not exercise.**
 - A fake external service must be as awkward as the real one.
 
 ## Framework & tooling traps — these have all cost real time
@@ -230,34 +182,34 @@ These apply to every tracked file: requirements, ACs, designs, `STATUS.md` lines
 (project-specific conventions go here, one line each, inside the file's cap)
 ```
 
-## 7. Epic file header note (insert after each epic's title line)
+## 6. Epic file header note (insert after each epic's title line)
 
 ```markdown
-> **Status lives in the tracked requirement tables (`requirements/`) and `STATUS.md`; build narrative in `docs/history/<story-id>.md`.** AC checkboxes below are the *definition of done*, not a maintained status — an unchecked box on a shipped story is not a claim. Dated "as built" notes and divergence annotations here are authoritative spec amendments.
+> **Status lives in the tracked requirement tables (`requirements/`) and `STATUS.md`; why a design is what it is: the design doc and its `Rejected:` lines.** AC checkboxes below are the *definition of done*, not a maintained status — an unchecked box on a shipped story is not a claim. Dated "as built" notes and divergence annotations here are authoritative spec amendments.
 ```
 
-## 8. AGENTS.md section (append; reconcile if one exists)
+## 7. AGENTS.md section (append; reconcile if one exists)
 
 ```markdown
 ## Dev process — the session flywheel (installed <date>)
 
 **Where things live:**
 
-- **Requirement status**: `requirements/functional.md` and `non-functional.md` are tracked tables. Every row carries a Status, updated in the commit that changes it. A requirement-level decision is a dated amendment on the row, one sentence; the reasoning goes to `docs/history/`.
-- **Phases, gates, spikes, infrastructure, open decisions**: `STATUS.md`. **Per-story narrative**: `docs/history/<story-id>.md`. **Standing knowledge**: `docs/HANDBOOK.md`. **Session state only**: the workstream's `NEXT_SESSION.md`, indexed from the root `NEXT_SESSION.md`. **Document caps**: `docs/limits.json`.
+- **Requirement status**: `requirements/functional.md` and `non-functional.md` are tracked tables. Every row carries a Status, updated in the commit that changes it. A requirement-level decision is a dated amendment on the row, one sentence; the reasoning goes to the commit message that makes it.
+- **Phases, gates, spikes, infrastructure, open decisions**: `STATUS.md`. **Rejected options**: a dated `Rejected:` line in the design document they constrain. **Standing knowledge**: `docs/HANDBOOK.md`. **Session state only**: the workstream's `NEXT_SESSION.md`, indexed from the root `NEXT_SESSION.md`. **Document caps**: `docs/limits.json`.
 - Epic files are frozen spec plus dated amendments. Their acceptance-criteria checkboxes are the definition of done, not a maintained status.
 
 **The session protocol:**
 
 - **Session start:** read the root index, then your workstream's pointer, then verify its claims against the code and the database. A fact you cannot read may still be measurable: name the cheapest reversible action that makes the system answer. Prefer the running application's own output over the platform's metadata.
 - **Choosing the work:** one specific, unblocked, buildable unit with no divergence against it → say what you start, and start. Two live candidates, an open decision or spike, a divergence, or scope you would have to invent → present the options and stop. A conflict between decided documents, and a gate clause no session can verify objectively, stay human.
-- **When a story lands, in the same commit:** the `STATUS.md` line with its date and gist; `docs/history/<story-id>.md` with the rejected options and what was not exercised; the affected requirement rows; every diverged design document, in both directions; the deploy impact at the top of the pull request body, read off the plan's own deployment decisions. "Nothing — no code and no migration" is usually the answer, and saying it every time is what makes the other answer believed.
+- **When a story lands, in the same commit:** the `STATUS.md` line with its date and gist; a rejected option as a dated `Rejected:` line in the design document; what was not exercised in the pull request body and the commit message; the affected requirement rows; every diverged design document, in both directions; the deploy impact at the top of the pull request body, read off the plan's own deployment decisions. "Nothing — no code and no migration" is usually the answer, and saying it every time is what makes the other answer believed.
 - **The close fires at a landing point**, and never on a command: the unit's criteria are met and the work is about to be committed, a blocker halts it with nothing else startable, or the context is materially consumed. One unit of work for each session, and the session does not reopen in the same context.
 - **A stop is not a close.** A stop ends the turn and waits in the same context: no pointer rewrite, no checklist, no `/clear` in a message that asks a question.
 - **A dormant workstream gets a verify-and-report, not a session.** Verify the pointer, report in a few lines, present what its decision queue still holds, and end. Rewrite the pointer only on a divergence.
 - **Session end:** rewrite your workstream's `NEXT_SESSION.md`, every section, against the new state, and update your line in the root index. A new trap or convention goes to `docs/HANDBOOK.md`; grep that file for the concept's nouns first, and correct the entry that exists.
 - **Every tracked document has a byte cap in `docs/limits.json`, and a test enforces it.** To add text, remove as much text as you add. A session that compacts a file lowers its cap in the same commit, and a session that raises one says so in its report.
-- **A decision of record is amended, and a knowledge file is replaced.** Requirement rows, ADRs, epic files and `docs/history/` entries keep the dated amendment. `AGENTS.md`, the handbook, `STATUS.md`, the design documents and the pointer are corrected by replacement: write what is true now, and let git hold the sentence you replaced.
+- **A decision of record is amended, and a knowledge file is replaced.** Requirement rows, ADRs and epic files keep the dated amendment, with the reasoning in the commit message. `AGENTS.md`, the handbook, `STATUS.md`, the design documents and the pointer are corrected by replacement: write what is true now, and let git hold the sentence you replaced.
 - **No self-invalidating facts in the pointer or `STATUS.md`.** The test: would the next ordinary action make this wrong? A commit count and a HEAD identifier fail it. Record what is in flight — the branch, the pull request and its state, what is pushed, the last landed story — and never a history of what was. A spent branch name goes stale at the next merge, so send the reader to `git branch --merged` and `gh pr list --state open`. The close's own branch is the one expected exception. Test and lint numbers stay.
 - **Then `/clear`.** Every session starts cold. A context that crosses the boundary hides a stale pointer until someone opens it cold.
 - **Write every tracked file in Simplified Technical English** — the rules are in `docs/HANDBOOK.md`. They do not govern conversation, quoted material, or the wording of a decided document.
@@ -267,10 +219,10 @@ These apply to every tracked file: requirements, ACs, designs, `STATUS.md` lines
 - **Closing a phase gate:** the gate line is the conjunction of its clauses. When every clause is `[x]`, the session marks the line and announces it for the developer's veto. Judgment lives on the clauses, and a clause no session can verify objectively is checked by the developer, on the clause. A stop: any unchecked clause, a clause you believe is wrongly checked, and a gate whose close is itself outward-facing. Never check a clause by inference.
 - **A conflict between two decided documents** gets a memo with the options and a recommendation. The pick stays human.
 
-**Working in parallel:** one `NEXT_SESSION.md` for each workstream, one `docs/history/` file for each story. Both are committed, never gitignored. The decision queue is a queue a human reads, and an untracked pointer makes a handoff impossible. Separation comes from one file for each stream, not from hiding files from git.
+**Working in parallel:** one `NEXT_SESSION.md` for each workstream, committed and never gitignored. The decision queue is a queue a human reads, and an untracked pointer makes a handoff impossible. Separation comes from one file for each stream, not from hiding files from git.
 ```
 
-## 9. `docs/limits.json` and the cap check
+## 8. `docs/limits.json` and the cap check
 
 Seed one entry for each tracked document: the pointers, `STATUS.md`, `docs/HANDBOOK.md`, the requirement tables, and `AGENTS.md` or `CLAUDE.md` — whichever holds the protocol in this repo. ⚠️ **The check skips a path it cannot find**, so a typo in a path reads as a pass. **Set each cap to the file's size now, rounded up to the next 1 000 bytes** — headroom that passes a typo fix and refuses a new section.
 

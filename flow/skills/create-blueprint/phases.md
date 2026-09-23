@@ -202,6 +202,6 @@ Wait for confirmation, then write all documents.
 
 ## After writing: offer the dev process
 
-Once all documents are written, ask one final question: "Want me to scaffold the session-flywheel dev process on top of this plan? (`/create-flywheel` — tracked Status columns on the requirement tables, STATUS.md generated from this plan, per-story `docs/history/`, per-workstream pointers, HANDBOOK, and the session protocol in AGENTS.md.)"
+Once all documents are written, ask one final question: "Want me to scaffold the session-flywheel dev process on top of this plan? (`/create-flywheel` — tracked Status columns on the requirement tables, STATUS.md generated from this plan, per-workstream pointers, HANDBOOK, and the session protocol in AGENTS.md.)"
 
 If yes, invoke the `create-flywheel` skill in greenfield mode against this project directory. If the skill is not available, say so and point at the `flow` plugin (`/plugin install flow@savantly`).
