@@ -302,7 +302,7 @@ Ordinary engineering, with four standing rules:
   `memos/` naming the options and a recommendation, per **Presenting a decision**.
   The pick stays human.
 - **Note traps as you hit them.** They go to `docs/HANDBOOK.md` at close, not into
-  the pointer.
+  the pointer — into the entry that already covers the concept, when there is one.
 - **Never widen a result type, gate, or guarantee silently.** If pressure to do so
   appears, it belongs in the story's `docs/history/` entry as a rejected option.
 - **Know what landing the work does before you land it.** Re-read the guard in
@@ -358,8 +358,9 @@ said is not a close; it is a checklist with nothing under it.
    `git log` can never recover — a thin entry here is the whole file wasted.
 3. **Requirement rows** — update Status on every affected FR/NFR. A
    requirement-level change (a loosened gate, a deferred clause) is a **dated
-   amendment on the row itself**. A design doc may carry the reasoning; it must
-   never contradict the row.
+   amendment on the row itself, one sentence for the decision**; the reasoning
+   goes to `docs/history/`, never onto the row. A design doc may carry the
+   reasoning; it must never contradict the row.
 4. **Design docs** — amend any that diverged, in both directions.
 5. **Epic file** — if the *spec* diverged rather than the status, add a dated
    amendment annotation. Never rewrite the original ACs; append.
@@ -398,6 +399,20 @@ said is not a close; it is a checklist with nothing under it.
 7. **New traps and conventions → `docs/HANDBOOK.md`**, never into the pointer. If
    you find yourself writing standing knowledge into `NEXT_SESSION.md`, it is in
    the wrong file.
+
+   **Grep the handbook for the concept's nouns first, and correct the entry that
+   exists.** A file nobody can search gets the same trap written into it twice.
+
+   **The handbook is capped in `docs/limits.json`, and the cap check runs in the
+   test command. To add, remove as much as you add** — merge two entries, or
+   shrink a trap that a test now pins to one line naming the test. Lower the cap
+   in the same commit when you compact; say so in the close when you raise one.
+
+   **A knowledge file is corrected by replacement, never by a dated amendment**:
+   the handbook, `STATUS.md`, `AGENTS.md`, design docs, the pointer. Write what
+   is true now, and let git hold the sentence you replaced. Requirement rows,
+   ADRs, epic files and `docs/history/` entries are the exception and keep the
+   dated amendment.
 8. **Root `NEXT_SESSION.md` index** — update this workstream's line if its state
    changed. Other workstreams' lines are theirs; correct one only if you have
    direct evidence it is wrong, and say that you did.

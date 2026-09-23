@@ -189,7 +189,16 @@ These apply to every tracked file: requirements, ACs, designs, `STATUS.md` lines
 - Specific quantities with units. "About", "quickly", and "as needed" are defects in a requirement.
 - **State an artefact, not a property.** "The run is safe" invites a demonstration, and a demonstration invites a person. "A test asserts that no path populates `updatedPermissions`" names a file somebody can open.
 - **An acceptance criterion names what verifies it.** A criterion whose verifier is a person is marked when it is written, never discovered at the close.
-- **Not governed:** conversation with a human, quoted material (gates, vendor terms, error strings), and existing text — a decided document's wording is someone's decision and is amended by appending, never restyled.
+- **Not governed:** conversation with a human, quoted material (gates, vendor terms, error strings), and existing text — a decided document's wording is someone's decision, and no session restyles it.
+
+## Caps, and how a document is corrected
+
+`docs/limits.json` names a byte cap for each tracked document, and the cap check fails when a file is above it. **To add text to a capped file, remove as much text as you add.** A session that compacts a file lowers its cap in the same commit. A session that raises a cap says so in its report.
+
+- **A decision of record keeps the dated amendment**, one sentence for the decision: requirement rows, ADRs, epic files, `docs/history/` entries. The reasoning goes to `docs/history/`, never onto the row.
+- **A knowledge file and a state file are corrected by replacement**: this handbook, `STATUS.md`, `AGENTS.md`, design docs, the pointer. Write what is true now; git holds the sentence you replaced.
+
+**Before you write a section here, grep this file for the concept's nouns.** An entry that exists is corrected in place. A trap that a test or a type now pins shrinks to one line naming the test.
 
 ## Test rules
 
@@ -201,15 +210,15 @@ These apply to every tracked file: requirements, ACs, designs, `STATUS.md` lines
 
 ## Framework & tooling traps — these have all cost real time
 
-(append as they bite; each entry is one line with the fix)
+(one line each, with the fix; grep before you add, and merge into the entry that exists)
 
 ## Shell & environment traps
 
-(append as they bite)
+(one line each; same rule)
 
 ## Standing gaps (named, not owed to any current session)
 
-(append when a story ships with a stated gap)
+(one line each, when a story ships with a stated gap; delete the line when the gap closes)
 
 ## Conventions established (follow them)
 
@@ -218,7 +227,7 @@ These apply to every tracked file: requirements, ACs, designs, `STATUS.md` lines
 - Derive a status projection at read time; store judgements, histories, provider facts, human choices — with an observation time.
 - A gate number's denominator is decided in writing before it is measured — and amended in writing too. A measurement that cannot be honest is refused, not approximated.
 - Duplicate a decision's reasoning, never just its shape. Re-derive a number before copying it forward.
-(append project-specific conventions as they are established)
+(project-specific conventions go here, one line each, inside the file's cap)
 ```
 
 ## 7. Epic file header note (insert after each epic's title line)
@@ -233,26 +242,71 @@ These apply to every tracked file: requirements, ACs, designs, `STATUS.md` lines
 ## Dev process — the session flywheel (installed <date>)
 
 **Where things live:**
-- **Requirement status**: `requirements/functional.md` + `non-functional.md` are **tracked tables** — every FR/NFR row carries a Status, updated in the same commit as the work or decision that changes it. Requirement-level decisions are dated amendments on the row.
-- **Phases, gates, spikes, infra, open decisions**: `STATUS.md` (concise). **Per-story narrative**: `docs/history/<story-id>.md`, one file per story. **Standing knowledge**: `docs/HANDBOOK.md`. **Session state only**: the workstream's `NEXT_SESSION.md`, indexed from the root `NEXT_SESSION.md`.
-- Epic files are frozen spec + dated amendments; their AC checkboxes are the definition of done, not a maintained status.
+
+- **Requirement status**: `requirements/functional.md` and `non-functional.md` are tracked tables. Every row carries a Status, updated in the commit that changes it. A requirement-level decision is a dated amendment on the row, one sentence; the reasoning goes to `docs/history/`.
+- **Phases, gates, spikes, infrastructure, open decisions**: `STATUS.md`. **Per-story narrative**: `docs/history/<story-id>.md`. **Standing knowledge**: `docs/HANDBOOK.md`. **Session state only**: the workstream's `NEXT_SESSION.md`, indexed from the root `NEXT_SESSION.md`. **Document caps**: `docs/limits.json`.
+- Epic files are frozen spec plus dated amendments. Their acceptance-criteria checkboxes are the definition of done, not a maintained status.
 
 **The session protocol:**
-- **Session start:** read the root `NEXT_SESSION.md` index, then your workstream's pointer; verify its claims against the code/DB before trusting them. **A third-party fact you cannot read is not a fact you cannot measure** — before writing "only a human can settle this", name the cheapest reversible action that would make the system answer: push a branch and read what CI and the platform's bots say, ask the provider's CLI, fetch the public surface, read the platform's API. **Prefer the running application's own output over the platform's metadata when the two could disagree.**
-- **Choosing the work:** when the pointer names one specific, unblocked, buildable unit and verification turned up nothing that touches it, say what you are starting and start — a single candidate is not a choice, and stopping to ask about it just spends a human's attention. Two live candidates, an open decision or spike, a divergence, or scope that would have to be invented → present the options and stop. Conflicts between decided documents, and any gate clause a session cannot verify objectively, stay human unconditionally.
-- **When a story lands, in the same commit:** check its `STATUS.md` line (date + gist) · write `docs/history/<story-id>.md`, including rejected options and what was NOT exercised · update the affected requirement rows · amend any diverged design doc in both directions · **state the deploy impact of the unit at the top of the pull request body** — migrations, public surfaces, environment variables — read off the plan's own deployment decisions. **"Nothing — no code and no migration" is usually the answer, and saying it every time is what makes the other answer believed.**
-- **The close is not a command you wait for** — it is what the session does at a landing point: the unit's ACs are met and the work is about to be committed (that commit carries the above), or a blocker halts it and nothing else is startable without a human, or context is materially consumed. One unit of work per session; after the close the session is over, and it does not reopen in the same context.
-- **A stop is not a close.** A stop ends the turn and waits for the answer in the same context: no pointer rewrite, no close checklist, no `/clear` in a message that asks a question. The close comes once the answer has produced work or gone into the pointer's decision queue.
-- **A dormant workstream gets a verify-and-report, not a session.** When the root index lists the workstream under *Dormant*, verify the pointer, report in a few lines, present anything its decision queue still holds as a choice, and end. Rewrite the pointer only when verification found a divergence. Do not run the close.
-- **Session end:** rewrite your workstream's `NEXT_SESSION.md` — every section, against the new state — and update your line in the root index. New traps/conventions go to `docs/HANDBOOK.md`, never into the pointer.
-- **No self-invalidating facts in `NEXT_SESSION.md` or `STATUS.md`.** The test: **would the next ordinary action make this wrong?** Commit counts and HEAD SHAs fail it. **Record what is in flight, never a history of what was** — the branch and pull request a reader could still commit to, and the last landed story ID; send the reader to `git branch --merged` and `gh pr list --state open` for the live lists. **A spent branch name, and any instruction conditioned on whether it has merged yet, goes stale at the next merge.** A pointer is written before its own commit, so **name the close's own branch as the one expected exception.** Test/lint numbers stay.
-- **Then `/clear`.** Every session starts from a cleared context. The pointer is only load-bearing if it is actually what the next session reads; a context carried across the boundary hides a stale pointer until someone else opens it cold.
-- **Write every tracked file in Simplified Technical English** — the rules are in `docs/HANDBOOK.md`. One topic per sentence, active voice with the actor named, one word per meaning, one obligation per requirement row. It does not govern conversation, quoted material, or the wording of an already-decided document.
-- **Every stop is a choice, not a question:** when work needs a human decision — the pick between candidates, a divergence's disposition, an entry in the pointer's decision queue — name the two or three real options, what each costs and unblocks, and the recommendation with its reasoning where there are grounds. Say plainly when there are none; an invented recommendation is worse than no recommendation. A recommendation is never a default — do not start it while waiting for the answer. **The last thing in the message is the next action**: evidence first, and at the bottom either the live choice (when the session waits for an answer) or the `/clear` sentence (when it has closed) — the bottom of a terminal message is what stays on screen.
-- **A blocker that has stopped the next unit for three closes is itself a finding.** When you are about to copy one forward unchanged again, **re-examine the frame, not the options**: is it unmeasurable or only unread, and **are all the options "the human does X"?** An option set with no cheap session action in it is incomplete. **Say the count out loud** when you present it.
-- **Never merge a branch that touches migrations**, and never treat "just push it and see" as free until you have said what the push and the merge do outside the repository.
-- **Closing a phase gate:** the gate line is the **conjunction of its clauses, not a separate judgment**. When every clause is `[x]`, the session marks the line ✅ and announces it as the developer's veto. **Judgment lives on the clauses** — a clause a session cannot verify objectively is checked by the developer, on the clause. **Still a stop:** any unchecked clause, a clause you believe is wrongly checked, and a gate whose close is itself outward-facing. **Never check a clause by inference; that rule is what the line rests on.**
-- **Conflicts between two decided documents** get a memo with the options and a recommendation; the pick stays human.
 
-**Working in parallel:** one `NEXT_SESSION.md` per workstream, one `docs/history/` file per story. Both are committed — never gitignored. The decision queue in a pointer is a queue a *human* reads, and an untracked pointer makes a handoff impossible. Separation comes from one file per stream, not from hiding files from git.
+- **Session start:** read the root index, then your workstream's pointer, then verify its claims against the code and the database. A fact you cannot read may still be measurable: name the cheapest reversible action that makes the system answer. Prefer the running application's own output over the platform's metadata.
+- **Choosing the work:** one specific, unblocked, buildable unit with no divergence against it → say what you start, and start. Two live candidates, an open decision or spike, a divergence, or scope you would have to invent → present the options and stop. A conflict between decided documents, and a gate clause no session can verify objectively, stay human.
+- **When a story lands, in the same commit:** the `STATUS.md` line with its date and gist; `docs/history/<story-id>.md` with the rejected options and what was not exercised; the affected requirement rows; every diverged design document, in both directions; the deploy impact at the top of the pull request body, read off the plan's own deployment decisions. "Nothing — no code and no migration" is usually the answer, and saying it every time is what makes the other answer believed.
+- **The close fires at a landing point**, and never on a command: the unit's criteria are met and the work is about to be committed, a blocker halts it with nothing else startable, or the context is materially consumed. One unit of work for each session, and the session does not reopen in the same context.
+- **A stop is not a close.** A stop ends the turn and waits in the same context: no pointer rewrite, no checklist, no `/clear` in a message that asks a question.
+- **A dormant workstream gets a verify-and-report, not a session.** Verify the pointer, report in a few lines, present what its decision queue still holds, and end. Rewrite the pointer only on a divergence.
+- **Session end:** rewrite your workstream's `NEXT_SESSION.md`, every section, against the new state, and update your line in the root index. A new trap or convention goes to `docs/HANDBOOK.md`; grep that file for the concept's nouns first, and correct the entry that exists.
+- **Every tracked document has a byte cap in `docs/limits.json`, and a test enforces it.** To add text, remove as much text as you add. A session that compacts a file lowers its cap in the same commit, and a session that raises one says so in its report.
+- **A decision of record is amended, and a knowledge file is replaced.** Requirement rows, ADRs, epic files and `docs/history/` entries keep the dated amendment. `AGENTS.md`, the handbook, `STATUS.md`, the design documents and the pointer are corrected by replacement: write what is true now, and let git hold the sentence you replaced.
+- **No self-invalidating facts in the pointer or `STATUS.md`.** The test: would the next ordinary action make this wrong? A commit count and a HEAD identifier fail it. Record what is in flight — the branch, the pull request and its state, what is pushed, the last landed story — and never a history of what was. A spent branch name goes stale at the next merge, so send the reader to `git branch --merged` and `gh pr list --state open`. The close's own branch is the one expected exception. Test and lint numbers stay.
+- **Then `/clear`.** Every session starts cold. A context that crosses the boundary hides a stale pointer until someone opens it cold.
+- **Write every tracked file in Simplified Technical English** — the rules are in `docs/HANDBOOK.md`. They do not govern conversation, quoted material, or the wording of a decided document.
+- **Every stop is a choice, not a question.** Name the two or three real options, what each costs and unblocks, and the recommendation with its reasoning; say plainly when there are no grounds for one. A recommendation is never a default: do not start it while you wait for the answer. The last thing in the message is the next action — the live choice, or the `/clear` sentence.
+- **A blocker that has stopped the next unit for three closes is itself a finding.** Re-examine the frame and not the options: is it unmeasurable or only unread, and is every option "the human does X"? Say the count out loud.
+- **Never merge a branch that touches migrations**, and say what a push and a merge do outside the repository before you call either free.
+- **Closing a phase gate:** the gate line is the conjunction of its clauses. When every clause is `[x]`, the session marks the line and announces it for the developer's veto. Judgment lives on the clauses, and a clause no session can verify objectively is checked by the developer, on the clause. A stop: any unchecked clause, a clause you believe is wrongly checked, and a gate whose close is itself outward-facing. Never check a clause by inference.
+- **A conflict between two decided documents** gets a memo with the options and a recommendation. The pick stays human.
+
+**Working in parallel:** one `NEXT_SESSION.md` for each workstream, one `docs/history/` file for each story. Both are committed, never gitignored. The decision queue is a queue a human reads, and an untracked pointer makes a handoff impossible. Separation comes from one file for each stream, not from hiding files from git.
 ```
+
+## 9. `docs/limits.json` and the cap check
+
+Seed one entry for each tracked document: the pointers, `STATUS.md`, `docs/HANDBOOK.md`, the requirement tables, and `AGENTS.md` or `CLAUDE.md` — whichever holds the protocol in this repo. ⚠️ **The check skips a path it cannot find**, so a typo in a path reads as a pass. **Set each cap to the file's size now, rounded up to the next 1 000 bytes** — headroom that passes a typo fix and refuses a new section.
+
+```json
+{
+  "rule": "To add text to a capped file, remove as much text as you add. A session that compacts a file lowers its cap in the same commit. A session that raises a cap says so in its report.",
+  "measuredIn": "bytes",
+  "maxBytes": {
+    "AGENTS.md": 0,
+    "STATUS.md": 0,
+    "NEXT_SESSION.md": 0,
+    "docs/HANDBOOK.md": 0,
+    "requirements/functional.md": 0,
+    "requirements/non-functional.md": 0
+  }
+}
+```
+
+**Wire the check into the project's test command**, so a close that adds cannot pass without an eviction. A project with a test runner writes it as a test in that runner; a project without one gets a script:
+
+```sh
+#!/bin/sh
+# scripts/check-doc-limits.sh — fails when a tracked document is above its cap.
+set -eu
+status=0
+while read -r file cap; do
+  [ -f "$file" ] || continue
+  size=$(wc -c < "$file" | tr -d ' ')
+  if [ "$size" -gt "$cap" ]; then
+    echo "$file holds $size bytes against a cap of $cap. To add text, remove as much as you add." >&2
+    status=1
+  fi
+done <<ENTRIES
+$(sed -n 's/^ *"\(.*\)": \([0-9][0-9]*\),*$/\1 \2/p' docs/limits.json)
+ENTRIES
+exit $status
+```
+
+**Measure the check before you trust it**: append 1 000 bytes to one capped file, run the command, read the failure, and revert.

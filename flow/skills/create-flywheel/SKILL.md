@@ -18,10 +18,13 @@ You are scaffolding a documentation-driven dev process whose core loop is: **eve
 | `docs/history/<story-id>.md` | **One file per story.** The narrative: decisions and why, rejected options, traps, test numbers, what was NOT exercised | A story lands |
 | `<workstream>/NEXT_SESSION.md` | **Session state only**: goal, human's decision queue, live workspace/infra state, baseline | Rewritten at every session end |
 | Root `NEXT_SESSION.md` | **Index of active workstreams** — one line each: owner, goal, state | A workstream's state changes |
-| `docs/HANDBOOK.md` | **Standing knowledge**: framework traps, test rules, how to run things, conventions | Only when something is learned |
+| `docs/HANDBOOK.md` | **Standing knowledge**: framework traps, test rules, how to run things, conventions | Something is learned — and an entry is replaced or merged to make room, because the file is capped |
+| `docs/limits.json` | **A byte cap for each tracked document**, enforced by a test | A session compacts a file and lowers its cap |
 | Epic files (`plan/epics/`) | Frozen spec + dated amendment annotations; AC checkboxes are the *definition of done*, never a maintained status | A spec-level divergence is discovered |
 
 The failure modes this prevents (all observed): status duplicated into epic checkboxes drifts silently; requirement docs never amended while design docs move (a loosened gate still stated as hard); NEXT_SESSION ballooning into a handbook that gets error-prone full rewrites every session; narratives bloating the tracker until it stops being scannable.
+
+**And the one this system produced by itself, measured on untethered 2026-09-22.** Every tracked file grew 10× to 75× in 23 days: the handbook took 5 483 insertions against 86 deletions across 143 sessions, one `CLAUDE.md` line reached 84 476 characters, and one requirement row reached 21 467. No session broke a rule — the rule said append, and one correct append cannot see the file. A full rewrite does not bound it either: the pointer is rewritten at every close and still grew 10×. **A file is bounded by a cap a test enforces, and by correcting a knowledge file in place instead of amending it.**
 
 ## Why the history is one file per story
 
@@ -44,7 +47,7 @@ Determine the mode and confirm both mode and target layout with the user before 
 
 1. **Add the Status column** to `requirements/functional.md` and `non-functional.md`, with the tracked-table preamble. `business.md` gets a note that BRs are goals tracked through the rows citing them.
 2. **Generate `STATUS.md`** mechanically from `plan/phases.md` + `plan/epics/*` + `plan/spikes.md` + `plan/infrastructure.md`: one section per phase with its gate, story checkbox one-liners, spikes table, infra items, open decisions from `open-questions.md`.
-3. **Create `docs/history/`** with its `README.md` convention stub, **`docs/HANDBOOK.md`** (seeded with the universal conventions from `templates.md`; project-specific traps accumulate later).
+3. **Create `docs/history/`** with its `README.md` convention stub, **`docs/HANDBOOK.md`** (seeded with the universal conventions from `templates.md`; project-specific traps accumulate later), and **`docs/limits.json`** with the cap check wired into the project's test command (`templates.md` §9). Set each cap to the file's size now, rounded up to the next 1 000 bytes.
 4. **Set up the pointers** — per the "Set up the pointers" section below. At minimum: a root `NEXT_SESSION.md` index and one workstream pointer.
 5. **Annotate epic files** with the definition-of-done header note.
 6. **Write the session protocol into `AGENTS.md`** (or `CLAUDE.md` if that's the repo's convention) — this is the load-bearing step; without it the files are furniture. Append, never overwrite; if a "where things live" section already exists, reconcile.
@@ -73,7 +76,9 @@ Summarize what was created and state the first pointer's goal. Remind the user: 
 - **The close is not a command you wait for** — it fires at a landing point: the unit's ACs are met and the work is about to be committed, a blocker halts it with nothing else startable, or context is materially consumed. One unit of work per session; the session does not reopen in the same context.
 - **A stop is not a close.** A stop ends the turn and waits for the answer in the same context — no pointer rewrite, no close checklist, no `/clear` in a message that asks a question.
 - **A dormant workstream gets a verify-and-report, not a session.** Verify the pointer, report in a few lines, present what its decision queue still holds as a choice, and end; rewrite the pointer only on a divergence, and do not run the close.
-- **Session end:** rewrite your workstream's `NEXT_SESSION.md` — every section, against the new state. Update your line in the root index. New traps/conventions learned go to `docs/HANDBOOK.md`, not into the pointer.
+- **Session end:** rewrite your workstream's `NEXT_SESSION.md` — every section, against the new state. Update your line in the root index. New traps/conventions learned go to `docs/HANDBOOK.md`, not into the pointer. Grep that file for the concept's nouns first and correct the entry that exists.
+- **Every tracked document has a byte cap in `docs/limits.json`, and a test enforces it.** To add, remove as much as you add. A session that compacts a file lowers its cap in the same commit; a session that raises one says so.
+- **A decision of record is amended; a knowledge file is replaced.** Requirement rows, ADRs, epic files and `docs/history/` entries keep the dated amendment — one sentence for the decision, the reasoning in `docs/history/`. The handbook, `STATUS.md`, `AGENTS.md`, design docs and the pointer are corrected by replacement: write what is true now and let git hold the sentence you replaced.
 - **No self-invalidating facts** in the pointer or `STATUS.md`. The test: **would the next ordinary action make this wrong?** Commit counts and HEAD SHAs fail it. **Record what is in flight, never a history of what was** — the branch and pull request a reader could still commit to, and the last landed story ID. **A spent branch name goes stale at the next merge**, and a reader cannot tell a stale one from a live one.
 - **Then `/clear`.** Every session starts cold. A context carried across the boundary means the next turn runs on memory rather than the pointer — which hides a stale pointer until someone opens it cold weeks later.
 - **Every stop is a choice, not a question:** name the two or three real options, what each costs, and the recommendation with its reasoning where there are grounds — in the session and in the pointer's decision queue alike. Say plainly when there are no grounds. **The last thing in the message is the next action** — evidence first, then either the live choice or the `/clear` sentence at the bottom.
@@ -85,6 +90,7 @@ Summarize what was created and state the first pointer's goal. Remind the user: 
 
 - **Never overwrite existing files without asking** — especially requirements/plan docs (they are someone's decisions) and any existing STATUS/NEXT_SESSION (offer merge).
 - **Never fabricate a status.** Greenfield rows are ⬜; adopt-mode rows come from the audit or stay flagged. A wrong ✅ is worse than a stale ⬜.
+- **Scaffolded text is one sentence per rule.** No restatement, no persuasion, no second sentence that says the first one again. The scaffold is read every session by every developer, and it is capped.
 - **Write every scaffolded file in Simplified Technical English** — the rules are in `../../reference/writing-style.md`, and they are installed into the project's `HANDBOOK.md` and `AGENTS.md` so later sessions keep to them. Existing requirement and plan text is **not** restyled: its wording is someone's decision.
 - **Respect the repo's layout** — `docs/` at root, `projects/<name>/`, whatever exists. The system is the seven roles, not the seven paths.
 - **Never write a self-invalidating fact into a scaffolded file** — no commit counts, no HEAD SHAs in `STATUS.md` or any pointer, and no list of spent branch names. The test is whether the next ordinary action makes it wrong.
