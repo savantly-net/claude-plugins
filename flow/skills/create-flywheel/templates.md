@@ -23,7 +23,7 @@ Add a `Status` column to every table; initialize per mode (⬜ **Open** for gree
 
 > Concise tracker for all planned work. *What* each item is: `plan/` (epics, spikes, phases) and `design/`. **Requirement-level status lives in the tracked tables in `requirements/`** — this file holds what those rows can't: phases, gates, spikes, infrastructure, open decisions, and the story one-liners. *Why it was built this way*: the design doc, with its dated `Rejected:` lines, and the landing commit. **Opening a story means reading its design doc, not just its line here.** Follow shipped code over a stale doc — then amend the doc in the same commit. Standing knowledge: `docs/HANDBOOK.md`.
 >
-> When a story lands: check the box here with the date and a one-line gist; a rejected option goes to the design doc as a dated `Rejected:` line; what was not exercised goes to the pull request body and the commit message; update the requirement rows.
+> When a story lands: check the box here with the date and a one-line gist; a rejected option goes to the design doc as a `Rejected (<date>):` line; what was not exercised goes to the pull request body and the commit message; update the requirement rows.
 >
 > **No self-invalidating facts here or in a pointer** — no commit counts, no HEAD SHAs, and no list of spent branch names. This file is committed *after* it is written, so a count is wrong by one before anyone reads it. Name the branch and pull request that are **in flight**, and the last landed story ID; send the reader to `git branch --merged` for what is spent.
 >
@@ -147,7 +147,7 @@ These apply to every tracked file: requirements, ACs, designs, `STATUS.md` lines
 
 `docs/limits.json` names a byte cap for each tracked document, and the cap check fails when a file is above it. **To add text to a capped file, remove as much text as you add.** A session that compacts a file lowers its cap in the same commit. A session that raises a cap says so in its report.
 
-- **A decision of record keeps the dated amendment**, one sentence for the decision: requirement rows, ADRs, epic files. The reasoning goes to the commit message that makes the amendment, never onto the row; `git blame` on the row finds it.
+- **A decision of record keeps the dated amendment**, one sentence for the decision: requirement rows, ADRs, epic files. The reasoning goes to the pull request body and the commit message that make the amendment, never onto the row; `git blame` on the row finds the commit.
 - **A knowledge file and a state file are corrected by replacement**: this handbook, `STATUS.md`, `AGENTS.md`, design docs, the pointer. A design doc's `Rejected:` line stays until the option is taken up; then replace it. Write what is true now; git holds the sentence you replaced.
 
 **Before you write a section here, grep this file for the concept's nouns.** An entry that exists is corrected in place. A trap that a test or a type now pins shrinks to one line naming the test.
@@ -155,7 +155,7 @@ These apply to every tracked file: requirements, ACs, designs, `STATUS.md` lines
 ## Test rules
 
 - The pure core first, then the IO. A fact the machine needs is a required argument, not a default.
-- Mutation-test every load-bearing guard and record the real number.
+- Mutation-test every load-bearing guard and put the real number in the pull request body.
 - **A test the machine runs is the default, and a person is the fallback.** Reach for a unit or integration test first, then a scripted check against the DB or the API, then a person. **Name the fallback as a fallback** — a criterion that needs a person is a criterion that waits for one.
 - A human click-through, recorded in the pull request body, verified against the DB. **Use it when nothing automated can reach the effect.** **Say what you could not exercise.**
 - A fake external service must be as awkward as the real one.
@@ -195,7 +195,7 @@ These apply to every tracked file: requirements, ACs, designs, `STATUS.md` lines
 
 **Where things live:**
 
-- **Requirement status**: `requirements/functional.md` and `non-functional.md` are tracked tables. Every row carries a Status, updated in the commit that changes it. A requirement-level decision is a dated amendment on the row, one sentence; the reasoning goes to the commit message that makes it.
+- **Requirement status**: `requirements/functional.md` and `non-functional.md` are tracked tables. Every row carries a Status, updated in the commit that changes it. A requirement-level decision is a dated amendment on the row, one sentence; the reasoning goes to the pull request body and the commit message.
 - **Phases, gates, spikes, infrastructure, open decisions**: `STATUS.md`. **Rejected options**: a dated `Rejected:` line in the design document they constrain. **Standing knowledge**: `docs/HANDBOOK.md`. **Session state only**: the workstream's `NEXT_SESSION.md`, indexed from the root `NEXT_SESSION.md`. **Document caps**: `docs/limits.json`.
 - Epic files are frozen spec plus dated amendments. Their acceptance-criteria checkboxes are the definition of done, not a maintained status.
 
@@ -203,13 +203,13 @@ These apply to every tracked file: requirements, ACs, designs, `STATUS.md` lines
 
 - **Session start:** read the root index, then your workstream's pointer, then verify its claims against the code and the database. A fact you cannot read may still be measurable: name the cheapest reversible action that makes the system answer. Prefer the running application's own output over the platform's metadata.
 - **Choosing the work:** one specific, unblocked, buildable unit with no divergence against it → say what you start, and start. Two live candidates, an open decision or spike, a divergence, or scope you would have to invent → present the options and stop. A conflict between decided documents, and a gate clause no session can verify objectively, stay human.
-- **When a story lands, in the same commit:** the `STATUS.md` line with its date and gist; a rejected option as a dated `Rejected:` line in the design document; what was not exercised in the pull request body and the commit message; the affected requirement rows; every diverged design document, in both directions; the deploy impact at the top of the pull request body, read off the plan's own deployment decisions. "Nothing — no code and no migration" is usually the answer, and saying it every time is what makes the other answer believed.
+- **When a story lands, in the same commit:** the `STATUS.md` line with its date and gist; a rejected option as a `Rejected (<date>):` line in the design document, or in the epic file when there is no design document; what was not exercised in the pull request body and the commit message; the affected requirement rows; every diverged design document, in both directions; the deploy impact at the top of the pull request body, read off the plan's own deployment decisions. "Nothing — no code and no migration" is usually the answer, and saying it every time is what makes the other answer believed.
 - **The close fires at a landing point**, and never on a command: the unit's criteria are met and the work is about to be committed, a blocker halts it with nothing else startable, or the context is materially consumed. One unit of work for each session, and the session does not reopen in the same context.
 - **A stop is not a close.** A stop ends the turn and waits in the same context: no pointer rewrite, no checklist, no `/clear` in a message that asks a question.
 - **A dormant workstream gets a verify-and-report, not a session.** Verify the pointer, report in a few lines, present what its decision queue still holds, and end. Rewrite the pointer only on a divergence.
 - **Session end:** rewrite your workstream's `NEXT_SESSION.md`, every section, against the new state, and update your line in the root index. A new trap or convention goes to `docs/HANDBOOK.md`; grep that file for the concept's nouns first, and correct the entry that exists.
 - **Every tracked document has a byte cap in `docs/limits.json`, and a test enforces it.** To add text, remove as much text as you add. A session that compacts a file lowers its cap in the same commit, and a session that raises one says so in its report.
-- **A decision of record is amended, and a knowledge file is replaced.** Requirement rows, ADRs and epic files keep the dated amendment, with the reasoning in the commit message. `AGENTS.md`, the handbook, `STATUS.md`, the design documents and the pointer are corrected by replacement: write what is true now, and let git hold the sentence you replaced.
+- **A decision of record is amended, and a knowledge file is replaced.** Requirement rows, ADRs and epic files keep the dated amendment, with the reasoning in the pull request body and the commit message. `AGENTS.md`, the handbook, `STATUS.md`, the design documents and the pointer are corrected by replacement: write what is true now, and let git hold the sentence you replaced.
 - **No self-invalidating facts in the pointer or `STATUS.md`.** The test: would the next ordinary action make this wrong? A commit count and a HEAD identifier fail it. Record what is in flight — the branch, the pull request and its state, what is pushed, the last landed story — and never a history of what was. A spent branch name goes stale at the next merge, so send the reader to `git branch --merged` and `gh pr list --state open`. The close's own branch is the one expected exception. Test and lint numbers stay.
 - **Then `/clear`.** Every session starts cold. A context that crosses the boundary hides a stale pointer until someone opens it cold.
 - **Write every tracked file in Simplified Technical English** — the rules are in `docs/HANDBOOK.md`. They do not govern conversation, quoted material, or the wording of a decided document.

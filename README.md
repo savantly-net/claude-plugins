@@ -175,7 +175,7 @@ Git records what happened. Two things it can't record, and the close writes them
 - **Rejected options** — work that was considered and refused leaves no commit and no diff. It goes into the design doc as a dated `Rejected:` line, under the section it constrains, because that's what the next session reads before taking the obvious approach.
 - **What was NOT exercised** — the negative space around a story's testing. It goes into the pull request body beside the deploy impact, and into the commit message.
 
-The reasoning for a requirement amendment goes into the commit message that makes it, so `git blame` on the row finds it. A story with nothing rejected and nothing untested writes nothing extra.
+The reasoning for a requirement amendment goes into the PR body and the commit message that make it. `git blame` on the row finds the commit, and the PR survives a squash merge. A story with nothing rejected and nothing untested writes nothing extra.
 
 Earlier versions wrote a `docs/history/<story-id>.md` narrative at every landing. Most of it repeated the STATUS line, the design doc and the PR, and it was rarely read — so it's gone. A project that already has one keeps it as a read-only record.
 

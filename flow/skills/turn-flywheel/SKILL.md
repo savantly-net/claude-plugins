@@ -353,9 +353,11 @@ said is not a close; it is a checklist with nothing under it.
 2. **Record the two facts git cannot recover — and nothing else.** There is no
    per-story history file; the STATUS line, the design doc, the handbook and the
    pull request already hold the rest.
-   - **A rejected option** → a dated `Rejected: <option> — <why>` line in the design
-     doc, under the section it constrains. That is where the next session looks
-     before it takes the obvious approach.
+   - **A rejected option** → a `Rejected (<date>): <option> — <why>` line in the
+     design doc, under the section it constrains. That is where the next session
+     looks before it takes the obvious approach. No design doc → a dated amendment
+     on the epic file.
+   - **Test and mutation numbers** → the pull request body.
    - **What was NOT exercised** → named plainly in the pull request body, beside the
      deploy impact, and in the commit message. An unnamed gap is a claim that none
      exists, and that claim is usually false. A gap that outlives the story is also a
@@ -365,8 +367,9 @@ said is not a close; it is a checklist with nothing under it.
 3. **Requirement rows** — update Status on every affected FR/NFR. A
    requirement-level change (a loosened gate, a deferred clause) is a **dated
    amendment on the row itself, one sentence for the decision**; the reasoning
-   goes to the commit message that makes the amendment, never onto the row —
-   `git blame` on the row finds it. A design doc may carry the
+   goes to the pull request body and the commit message that make the amendment,
+   never onto the row — `git blame` on the row finds the commit, and the pull
+   request survives a squash merge. A design doc may carry the
    reasoning; it must never contradict the row.
 4. **Design docs** — amend any that diverged, in both directions.
 5. **Epic file** — if the *spec* diverged rather than the status, add a dated
