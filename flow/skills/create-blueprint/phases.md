@@ -92,6 +92,17 @@ Present as a textual dependency diagram or ordered list showing:
 2. What unblocks next
 3. Critical path — the longest chain of sequential dependencies
 
+### Declare a dependency only for a technical need
+
+**A story depends on another only when it reads, calls or extends what the other builds.**
+A preferred order is not a dependency: write it as the order of the list, and leave the
+`**Dependencies:**` field without it.
+
+**This is what lets an unattended run keep going.** In loop mode a session never overrides a
+declared dependency, so a chain declared for convenience puts every later story behind the
+first story that waits on the developer. **Two converters that share nothing do not depend
+on each other, even when one was planned first.**
+
 Ask: "Does this ordering make sense? Any dependencies I'm missing or overstating?"
 
 Wait for confirmation before proceeding.
@@ -113,6 +124,22 @@ Spikes should come from:
 - Performance targets (NFRs) that are ambitious
 - Integration points with external systems
 - Open questions that are marked as blockers
+
+### Move every known decision to the front
+
+**A decision the plan already knows about is cheapest before the build starts.** Read the
+stories, the requirements and the designs for a choice that the developer owns: two decided
+documents that disagree, a story whose notes say "the developer picks", a new dependency, a
+change to a public contract. **List each one as a decision spike of the first phase**, with
+its options, what each costs, and a recommendation where there are grounds for one.
+
+**The goal is a long stretch of work that needs nobody.** A decision answered at the start
+costs one conversation. The same decision found at the tenth story stops an unattended run
+there, and every story after it waits.
+
+⚠️ **A decision that cannot be answered yet stays in the plan, and its stories go last.**
+Place them after every story that does not need the answer, so the run reaches them only
+when nothing else is left.
 
 Present and ask: "Any other unknowns that worry you? Should any of these be resolved before we start, or can they run in parallel with early work?"
 
@@ -195,6 +222,9 @@ Phases should be ordered so that:
 4. Each phase gate is objectively verifiable, **and each clause names what verifies it** — a
    clause only a person can check is marked 👤, because the flywheel will stop on it and hand
    it to the developer
+5. **Human gates sit at the edges of a phase, never in its middle.** Decision spikes come
+   first; stories that wait on a person, and 👤 criteria, come last, where the gate collects
+   them. **An unattended run then builds the whole middle of the phase without a stop.**
 
 Present and ask: "Does this phasing make sense? Want to reorder anything or adjust the phase gates?"
 

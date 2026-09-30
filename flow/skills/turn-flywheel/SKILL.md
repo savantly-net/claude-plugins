@@ -208,6 +208,11 @@ name precisely which test failed and for which one, per **Presenting a decision*
   outward-facing** — see **Closing a phase gate** below.
 - The `ask` argument was passed.
 
+**In LOOP MODE, two of these stops come first to a test.** The first bullet is an ordering
+choice, and the third holds only when no other unit can start. **Apply A choice the loop
+session takes itself** before you stop on either: a choice that passes it is taken and
+recorded, and one that fails it is the stop.
+
 **A stop is not a close.** A stop ends the *turn*; the session stays open in this context
 and waits for the answer. Write no pointer, run no close checklist, and say nothing about
 `/clear` — the answer has to land somewhere, and a cleared context is not it. The close
@@ -553,8 +558,14 @@ turn. The two fields differ. `pointer.path` is relative to the root of the repos
 
 **Write `pointer.blockedBy` when the next unit cannot start.** The field is optional, and
 a next unit that is ready to build carries no field. **The field states what blocks the
-unit, in one sentence.** The machine stops the run on it, because a blocked next unit is
-no unambiguous next unit of work.
+unit, in one sentence.** The machine starts no unit on it, because a blocked next unit is
+no unambiguous next unit of work. A runner may start one more session so that the session
+raises the blocking decision; that session writes the `decision` block, never this one.
+
+⚠️ **Before you write `blockedBy`, look for another unit that can start.** When one passes
+the test of **A choice the loop session takes itself** below, name it in `pointer.story`,
+write no `blockedBy`, and record the reorder in `decided`. **Write `blockedBy` only when no
+unit of the backlog can start.**
 
 ```untethered-outcome
 {
@@ -637,9 +648,12 @@ name. The close still rewrites the pointer, and the block does not report it.
 | The session | The outcome |
 |---|---|
 | lands a unit of work, and completes the close | `continue` |
-| lands a unit of work, and finds the next unit blocked | `continue`, with `pointer.blockedBy` |
-| stops at a choice, per **Presenting a decision** | `decision` |
-| finds a blocker, and nothing else is startable | `done` |
+| lands a unit of work, finds the next unit blocked, and finds another unit that can start | `continue`, naming that unit, with the reorder in `decided` |
+| lands a unit of work, and finds no unit of the backlog that can start | `continue`, with `pointer.blockedBy` |
+| reaches a choice that passes every test of **A choice the loop session takes itself** | no block — take the choice, record it in `decided`, and keep working |
+| stops at a choice that fails one of those tests, per **Presenting a decision** | `decision` |
+| finds no unit that can start, and an open decision that the developer owns blocks one or more | `decision`, for the decision that unblocks the most work |
+| finds a blocker that no answer of the developer removes, and nothing else is startable | `done` |
 | finds an empty backlog | `done` |
 | lands the LAST unit of the backlog, and nothing remains | `done`, with `story` and `landed` |
 | reaches a phase gate holding a clause a session cannot verify | `done` |
@@ -653,6 +667,93 @@ already asks for.
 **A blocker is not a fork.** A fork gives the developer a choice between two courses. A
 blocker leaves no course. A blocker is `done`, and `reason` names it.
 
+**An open decision is a fork, even when it is the reason that nothing can start.** When the
+pointer's queue holds decisions that the developer owns and they block every remaining unit,
+write a `decision` block for the ONE decision that unblocks the most work, with that
+decision's options and its recommendation first. **Do not write `done` because a unit is
+blocked on a question**: the runner carries a `decision` to the developer's phone and resumes
+the session with the answer, and a `done` ends the run with the question unasked. The other
+decisions stay in the pointer, and the next stop raises the next one. **`done` is for a
+blocker that no answer removes** — an empty backlog, an outside dependency, a gate clause.
+
+## A choice the loop session takes itself
+
+**A run is worth what it builds between two contacts with the developer.** A stop that the
+developer answers by approving the recommendation costs a message, a wait, and often the
+rest of the run. **In loop mode the session therefore takes two kinds of choice itself**,
+and it records each one. Every other choice is a `decision`, exactly as before.
+
+### An ordering choice
+
+**The choice is between units of work, not between ways to build one.** Two or more units
+can start and nothing orders them, or the next unit is blocked and another unit could run
+first.
+
+**Take it when the unit you pick passes all four axes of the one-candidate test on its
+own**: no open spike it depends on, no open decision it needs, **every predecessor that its
+`**Dependencies:**` field and `plan/dependencies.md` declare has landed**, and no phase gate
+stands in front of it.
+
+🔴 **Never override a declared dependency.** A session that judges a declared dependency to
+be "only an ordering" is changing the plan, and the plan is the developer's. That unit
+cannot start, and the choice between it and waiting is a `decision`.
+
+**Pick in this order:** the unit that the pointer or the plan recommends; else the unit that
+unblocks the most later units; else the unit that comes first in `STATUS.md`.
+
+### A choice between options, where the session has a recommendation
+
+**Take the recommendation only when every one of these holds.** One failure makes it a
+`decision`.
+
+1. **It has grounds.** You wrote the reasoning, and it does not rest on a guess about what
+   the developer prefers.
+2. **It contradicts no decided document** — no requirement row, no ADR, no design
+   document, no acceptance criterion, and no rule in the project's `CLAUDE.md` or
+   `AGENTS.md`. 🔴 **A conflict between two decided documents always fails this test**,
+   because taking either side overrules the other.
+3. **No decided document reserves the choice for the developer.** A sentence such as "the
+   developer picks", "a decision for the developer" or "needs approval" reserves it.
+4. **It changes no acceptance criterion, landed or planned, and no public contract** — an
+   exported name, a published format, a version, a schema, a migration.
+5. **It is reversible inside the repository.** A later commit undoes it, and nothing outside
+   the repository changed: no push, no deploy, no message, no new dependency, no spend.
+
+🔴 **These are never taken, whatever the recommendation:** a gate clause, a 👤 criterion, an
+outward-facing action, and anything that **Always stop, regardless** names.
+
+### The record
+
+**Every choice taken this way goes on the record in three places.**
+
+- **`decided` on the outcome block**: one entry for each choice.
+- **The pointer**, under a heading **Choices the loop took**, for the developer to review.
+  The next close carries an entry forward until the developer has seen it.
+- **The commit message** of the unit the choice shaped.
+
+```untethered-outcome
+{
+  "version": 1,
+  "outcome": "continue",
+  "story": "F03.2",
+  "landed": true,
+  "decided": [
+    {
+      "kind": "ordering",
+      "question": "F03.3 waits on the gallon decision. What runs next?",
+      "choice": "F03.4, whose declared predecessors have all landed",
+      "reason": "F03.4 depends on F03.2 only, and the gallon decision stays in the queue"
+    }
+  ],
+  "pointer": { "path": "NEXT_SESSION.md", "story": "F03.4", "rewritten": true }
+}
+```
+
+`decided` is optional and it raises no version. Each entry carries `kind` — `ordering` or
+`option` — and `question`, `choice` and `reason`, each one sentence. **It rides a `done`
+block too.** ⚠️ **A choice that failed a test is not in `decided`**; it is the `decision`
+block, or an entry of the decision queue.
+
 ## The block does not replace the prose
 
 The session writes its ordinary report first. A human reads the report, and the report
@@ -662,12 +763,14 @@ that disagrees with the prose above it is a defect.
 
 ## What loop mode does not change
 
-Loop mode changes what the session **writes**. It changes nothing that the session
-**decides**.
+Loop mode changes what the session **writes**. **It changes one thing that the session
+decides**: the two kinds of choice in **A choice the loop session takes itself**, each
+recorded. Nothing else.
 
-- The one-candidate test is unchanged. Loop mode does not lower the bar for an auto-start.
-- **The pick stays human.** A `decision` block reaches the developer by a message. It is
-  not a licence to pick.
+- The one-candidate test is unchanged for the unit itself. Loop mode does not lower the bar
+  for an auto-start.
+- **Every other pick stays human.** A `decision` block reaches the developer by a message. It
+  is not a licence to pick.
 - A conflict between two decided documents still gets a memo, and the block that reports
   it is a `decision`.
 - The close is unchanged. Every step of Part 1 and Part 2 runs before a `continue` block.
