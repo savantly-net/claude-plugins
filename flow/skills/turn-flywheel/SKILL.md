@@ -558,8 +558,9 @@ turn. The two fields differ. `pointer.path` is relative to the root of the repos
 
 **Write `pointer.blockedBy` when the next unit cannot start.** The field is optional, and
 a next unit that is ready to build carries no field. **The field states what blocks the
-unit, in one sentence.** The machine stops the run on it, because a blocked next unit is
-no unambiguous next unit of work.
+unit, in one sentence.** The machine starts no unit on it, because a blocked next unit is
+no unambiguous next unit of work. A runner may start one more session so that the session
+raises the blocking decision; that session writes the `decision` block, never this one.
 
 ⚠️ **Before you write `blockedBy`, look for another unit that can start.** When one passes
 the test of **A choice the loop session takes itself** below, name it in `pointer.story`,
@@ -651,7 +652,8 @@ name. The close still rewrites the pointer, and the block does not report it.
 | lands a unit of work, and finds no unit of the backlog that can start | `continue`, with `pointer.blockedBy` |
 | reaches a choice that passes every test of **A choice the loop session takes itself** | no block — take the choice, record it in `decided`, and keep working |
 | stops at a choice that fails one of those tests, per **Presenting a decision** | `decision` |
-| finds a blocker, and nothing else is startable | `done` |
+| finds no unit that can start, and an open decision that the developer owns blocks one or more | `decision`, for the decision that unblocks the most work |
+| finds a blocker that no answer of the developer removes, and nothing else is startable | `done` |
 | finds an empty backlog | `done` |
 | lands the LAST unit of the backlog, and nothing remains | `done`, with `story` and `landed` |
 | reaches a phase gate holding a clause a session cannot verify | `done` |
@@ -664,6 +666,15 @@ already asks for.
 
 **A blocker is not a fork.** A fork gives the developer a choice between two courses. A
 blocker leaves no course. A blocker is `done`, and `reason` names it.
+
+**An open decision is a fork, even when it is the reason that nothing can start.** When the
+pointer's queue holds decisions that the developer owns and they block every remaining unit,
+write a `decision` block for the ONE decision that unblocks the most work, with that
+decision's options and its recommendation first. **Do not write `done` because a unit is
+blocked on a question**: the runner carries a `decision` to the developer's phone and resumes
+the session with the answer, and a `done` ends the run with the question unasked. The other
+decisions stay in the pointer, and the next stop raises the next one. **`done` is for a
+blocker that no answer removes** — an empty backlog, an outside dependency, a gate clause.
 
 ## A choice the loop session takes itself
 
