@@ -101,6 +101,10 @@ Check, don't assume:
 Report every divergence found, plainly. A divergence is itself a finding: the
 pointer gets corrected at close **even if nothing else happens this session**.
 
+**The checks do not depend on each other, so run them at the same time** — parallel tool
+calls in one message, and a background run or a subagent for the test suite when it is
+slow. Wait for every result before you trust the pointer.
+
 ### "I cannot read it" is not "I cannot measure it"
 
 The last row is where sessions give up too early, and the cost compounds: a
@@ -166,6 +170,10 @@ they are where you find out why the obvious approach was already refused. If the
 story touches a surface another story already built, read that surface's design doc
 too. A legacy `docs/history/<story-id>.md` from an earlier version is read the same
 way, if one exists; never write a new one.
+
+**When that reading is wide, give it to one read-only `Explore` subagent** and take back a
+short summary: the ACs, the interfaces, the `Rejected:` lines, and the files the story will
+touch. The main context keeps the decision, and not the file dumps.
 
 ### The one-candidate test
 
@@ -300,7 +308,7 @@ are the options above. See **LOOP MODE** at the end of this file.
 
 ## 4. Work
 
-Ordinary engineering, with four standing rules:
+Ordinary engineering, with these standing rules:
 
 - **Code and doc diverge → follow the code, amend the doc in the same commit** —
   and say which one was wrong. Sometimes the doc is right and the code is the bug.
@@ -315,6 +323,45 @@ Ordinary engineering, with four standing rules:
   section 2. **A session never merges a branch that touches migrations**, and it
   says the deploy impact out loud — in the pull request body, and to the human —
   before asking for a merge.
+- **Split the unit when its design splits it.** See the next section.
+
+### Parallel work inside one unit
+
+**One unit for each session does not mean one agent for each unit.** When the design
+allows it, build the parts of the unit at the same time with subagents. The parallelism
+is inside the unit, never across units: two stories at the same time is two workstreams,
+each with its own pointer and its own session.
+
+**Split a part off when every one of these holds:**
+
+1. **The design names it.** The design doc's **Build Parts** section, the ACs, or the
+   interfaces section shows it as a separate piece. Do not invent a split that the design
+   does not show.
+2. **It touches files that no other part touches.** Two parts that need the same file are
+   one part.
+3. **It depends on no interface that is not built yet.** Write the shared interface — the
+   type, the schema, the function signature — in the main session first, then split.
+
+**These always qualify, with no design to name them:** read-only research, a test run, a
+lint or mutation run, and a review pass of the finished diff.
+
+**Isolate every part that writes** in its own git worktree, and give each subagent the
+part's ACs, the interface it builds against, and the files it owns.
+
+🔴 **The main session owns the unit, and these never go to a subagent:**
+
+- **The verification of what a subagent returns.** A subagent's "done" is a claim, the
+  same as the pointer's. Read the diff, and check it against the ACs.
+- **The integration.** Merge the parts, then run the full suite once on the result.
+- **The close.** `STATUS.md`, the requirement rows, the design amendments, the handbook,
+  and the pointer. No subagent edits a tracked flywheel file.
+- **Every action outside the repository.** No subagent pushes, merges, or deploys. The
+  guard in section 2 stays with the main session.
+- **Every decision.** A subagent that reaches a choice returns it to the main session,
+  and the main session applies **Presenting a decision**.
+
+**A part that fails, or that returns work you cannot verify, comes back to the main
+session.** Do it in sequence. Never land a part that you did not read.
 
 ### When to close — the close is not a command you wait for
 
@@ -774,6 +821,9 @@ recorded. Nothing else.
 - A conflict between two decided documents still gets a memo, and the block that reports
   it is a `decision`.
 - The close is unchanged. Every step of Part 1 and Part 2 runs before a `continue` block.
+- **A subagent writes no outcome block and takes no choice of its own.** Only the main
+  session declares the outcome, and only the main session applies **A choice the loop
+  session takes itself**.
 - **Never fabricate an outcome.** A `continue` block on a turn that landed nothing is the
   same failure as a wrong ✅, and the machine acts on it.
 

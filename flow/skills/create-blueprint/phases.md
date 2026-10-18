@@ -179,7 +179,15 @@ For each component identified in `architecture/components.md`, produce a technic
 
 ## Observability
 [What metrics, traces, and logs this component emits]
+
+## Build Parts
+[The pieces of this component that can be built at the same time: for each, the files it owns and the interface it builds against. Name the interface that must exist first. Write "One part" when nothing splits.]
 ```
+
+**Build Parts is what lets a session build one story with parallel subagents.** A part
+owns its files, and no other part touches them. Two pieces that need the same file are one
+part. Do not split for its own sake: a part that is smaller than its handoff costs more
+than it saves.
 
 If you don't have enough information to design a section concretely, mark it as `[NEEDS SPIKE: reference spike title]` rather than guessing.
 
