@@ -1,6 +1,6 @@
 ---
 name: turn-flywheel
-description: Turn the session flywheel — open a session (orient from the workstream's NEXT_SESSION.md, verify its claims against the code, then start the next unit of work when exactly one is live, or propose when there is a real choice) or close one (the landing ritual: STATUS line, requirement rows, design amendments with any rejected option, then rewrite the pointer). Use at the start of a session on a flywheel project; the close fires by itself when the work lands. Companion to /create-flywheel, which installs the process. LOOP MODE, the `loop` argument, makes the session declare the outcome of its own turn in a machine-readable block, so a runner can drive sessions unattended.
+description: Turn the session flywheel — open a session (orient from the workstream's NEXT_SESSION.md, verify its claims against the code, then start the next unit of work — or a batch of several, when several are live and touch separate files — or propose when there is a real choice) or close one (the landing ritual: STATUS line, requirement rows, design amendments with any rejected option, then rewrite the pointer). Use at the start of a session on a flywheel project; the close fires by itself when the work lands. Companion to /create-flywheel, which installs the process. LOOP MODE, the `loop` argument, makes the session declare the outcome of its own turn in a machine-readable block, so a runner can drive sessions unattended.
 argument-hint: [workstream-slug] | close | ask | loop
 ---
 
@@ -18,7 +18,9 @@ the opening and the close — because those are what erode, and their failure is
 session always stops for the pick, waits to be told to close, or hands every phase
 gate to the developer. Where the two differ, this skill supersedes it; that is a version skew, not a conflict between two decided
 documents, so it needs no memo. Refresh the project's `AGENTS.md` section at the next
-close if it is materially stale.
+close if it is materially stale. **"One unit of work per session" in a project protocol is
+that skew too**: since 1.10.0 a session takes a batch (see **A batch**). A project that
+wants fewer lanes says so with a number, for example "a batch holds one lane".
 
 **Know which version is governing before you rely on a rule that changed.** A project
 document may name a version this skill has not reached yet, and `AGENTS.md` cannot tell
@@ -181,7 +183,8 @@ Auto-start is a fast path **through** these checks, never around them. Apply all
 five; every one must hold:
 
 1. The pointer's goal names a **specific** story or spike — not a menu, not "continue
-   the epic".
+   the epic". A list of named live units is not a menu: it is a batch candidate set (see
+   **A batch**). A pointer that asks the human to pick among them is a menu.
 2. Verification found **no divergence that touches it**.
 3. It is **unblocked** on all four axes: no open spike it depends on, no open decision
    it needs, no unlanded predecessor story, and no phase gate standing in front of it.
@@ -203,9 +206,54 @@ been said.
 **Any of the five fails → stop, with a choice.** Present at most three candidates and
 name precisely which test failed and for which one, per **Presenting a decision** below.
 
+### A batch — more than one unit, when the plan allows it
+
+**A session lands as many units as can run at once without a choice.** The batch is the set
+of units the session takes at open. It is one unit when one unit is live. **It is several
+when several are live and they do not touch each other**: a lane left idle is the cost that
+one unit for each session pays, and development is fast enough that the cost is real.
+
+**A unit joins the batch when every one of these holds:**
+
+1. **It passes tests 2 to 5 of the one-candidate test on its own**, and the pointer,
+   `STATUS.md` or `plan/dependencies.md` names it as live.
+2. **Its files do not overlap the files of another lane.** Read them from the design doc's
+   **Build Parts** and the epic. A shared file — the database schema, the migrations
+   directory, a permission catalog, the lockfile, a shared route — puts the two units in
+   **one lane**, which one agent builds in sequence.
+3. **It depends on no other unit of the batch, unless both are in one lane** and the lane
+   builds them in dependency order. The successor starts after the predecessor's ACs are met
+   and its commit exists.
+4. **At most one lane carries a migration.**
+5. **The batch holds at most three lanes**, unless the project sets a number. The main
+   session verifies every lane, and its context is the limit.
+
+**When more units are live than lanes**, take them in this order: the order that the
+pointer gives; then the unit that unblocks the most later units; then the order of
+`STATUS.md`. This is a reading of the plan, not a pick. 🔴 **Never override a declared
+dependency**, and when the pointer leaves the order to the human, stop.
+
+**Announce the batch the way you announce one unit** — each unit, its ACs, its lane and its
+files, and the line on why it is live — then say that you are **starting now**, and start.
+The announcement is the human's veto.
+
+**Build it with the rules of Parallel work inside one unit**: one subagent for each lane (a
+one-lane batch needs none), each one isolated, none writing to git or to a tracked flywheel
+file. The main session writes each shared interface first, reads every diff against its
+unit's ACs, commits each unit with its own Part 1, runs the full suite once on the integrated
+result, and runs one Part 2 close.
+
+**A lane that fails does not hold back the others.** Land the units that met their ACs. The
+failed unit keeps its status — ⬜, or 🟨 with the open half named — and the pointer names it.
+**Context consumed in the middle of a batch is a landing point**: land what is done, close,
+and name the rest as next.
+
+**A batch never spans workstreams.** It has one pointer and one close.
+
 ### Always stop, regardless
 
-- Two or more unblocked candidates that the pointer does not order between.
+- Two or more unblocked candidates that cannot all join one batch, and the pointer leaves
+  the order between them to the human.
 - A verification divergence that touches the candidate, or that changes what should
   be worked on at all.
 - The work needs an answer from the decision queue, or from `STATUS.md`'s open
@@ -327,10 +375,10 @@ Ordinary engineering, with these standing rules:
 
 ### Parallel work inside one unit
 
-**One unit for each session does not mean one agent for each unit.** When the design
-allows it, build the parts of the unit at the same time with subagents. The parallelism
-is inside the unit, never across units: two stories at the same time is two workstreams,
-each with its own pointer and its own session.
+**One unit does not mean one agent.** When the design allows it, build the
+parts of the unit at the same time with subagents. Parallelism across units is a **batch**
+(see **A batch** above), and it stays inside one workstream. Two workstreams at the same
+time is two sessions, each with its own pointer.
 
 **Split a part off when every one of these holds:**
 
@@ -368,9 +416,8 @@ session.** Do it in sequence. Never land a part that you did not read.
 It is what the session does at a landing point. Enter CLOSE mode on your own when any
 of these is true:
 
-- **The unit chosen at open has landed** — its ACs are met and the work is ready to
-  commit. That commit is the one that carries Part 1, so run Part 1 *before* committing,
-  not after.
+- **The batch chosen at open has landed** — every unit in it met its ACs or stopped. Each
+  unit's commit carries its own Part 1, so run Part 1 *before* each commit, not after.
 - **A blocker halts the named work** and nothing else is sensibly startable without a
   human. This is the most valuable close there is; do not let it look like a wasted
   session.
@@ -381,7 +428,7 @@ of these is true:
 not a close**), and a dormant-workstream open whose verification came back clean (see
 **A dormant workstream**). The first stays open; the second reports and ends.
 
-**One unit of work per session.** After the close, the session is over — say so and
+**One batch per session.** After the close, the session is over — say so and
 stop. Do not open again in the same context, however much room is left: an auto-reopen
 would carry the warm context across the boundary and leave the pointer unexercised,
 which is the whole thing the `/clear` exists to prevent.
@@ -601,6 +648,11 @@ of `remaining`.** They overlap, so **do not add them up.**
 
 `story` names the unit that this turn landed. `pointer.story` names the unit for the next
 turn. The two fields differ. `pointer.path` is relative to the root of the repository.
+
+**A batch that lands more than one unit also writes `stories`**: every unit that it landed,
+in commit order. `story` names the first of them. The field is optional and raises no
+version, and it rides a `done` block too. `pointer.story` names the first unit of the next
+batch.
 `pointer.rewritten` is true when the close rewrote the pointer whole.
 
 **Write `pointer.blockedBy` when the next unit cannot start.** The field is optional, and
@@ -706,7 +758,7 @@ name. The close still rewrites the pointer, and the block does not report it.
 | reaches a phase gate holding a clause a session cannot verify | `done` |
 
 **A stop and a fork are the same event.** Every stop that this skill names above is a
-`decision` block: two or more unblocked candidates, a divergence that changes the work, an
+`decision` block: two or more unblocked candidates that cannot share a batch, a divergence that changes the work, an
 open decision, a gate that is outward-facing, and a conflict between two decided
 documents. The options of the block are the options that **Presenting a decision**
 already asks for.
@@ -844,9 +896,11 @@ recorded. Nothing else.
   its reasoning where you have grounds — in the session, in a memo, and in the
   pointer's decision queue alike.
 - **The pick stays human whenever there is a pick to make.** One unambiguous
-  candidate is not a choice, and stopping to ask about it just spends a human's
-  attention on rubber-stamping. Two candidates, an open decision, or a divergence *is*
-  a choice — and those stop. Conflicts between two decided documents, and **any gate
+  candidate is not a choice, and neither is a batch of every live unit that passes on
+  its own; stopping to ask about either just spends a human's
+  attention on rubber-stamping. Two candidates that cannot share a batch and that the
+  pointer leaves to the human, an open decision, or a divergence *is* a choice — and
+  those stop. Conflicts between two decided documents, and **any gate
   clause a session cannot verify objectively**, stay human unconditionally. **A gate
   line whose clauses are all checked is not a judgment call and does not stop.**
 - **No self-invalidating facts in tracked files.** The test: **would the next
