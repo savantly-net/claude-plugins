@@ -190,3 +190,11 @@ grep -rn "/flow:\|/create-spec\|/analyze-fit\|/create-blueprint\|/create-flywhee
 ```
 
 Bump `version` in both `.claude-plugin/marketplace.json` and `flow/.claude-plugin/plugin.json` when you change a skill.
+
+## License
+
+Apache License 2.0. See [LICENSE](LICENSE).
+
+Copyright 2026 Savantly LLC.
+
+The files these skills generate in your project are yours.
