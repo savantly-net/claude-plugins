@@ -1,5 +1,5 @@
 {
   "name": "flow",
   "description": "Spec-to-shipped workflow: idea → requirements → plan → a session process that compounds context across sessions and developers",
-  "version": "1.9.0"
+  "version": "1.10.0"
 }
