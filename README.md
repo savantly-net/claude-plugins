@@ -1,8 +1,8 @@
 # Savantly Claude Code Plugins
 
-Claude Code plugins for Savantly engineers.
+Open-source Claude Code plugins from [Savantly](https://savantly.net). We built them for our own team and use them on client and internal projects.
 
-Currently one plugin: **`flow`** — the spec-to-shipped workflow, five skills that hand off to each other.
+Currently one plugin: **`flow`** — the spec-to-shipped workflow, five skills that hand off to each other. They plan the requirements, scope and architecture before any code gets written, then carry the design decisions from one session to the next, so a project stays well architected as it gets large.
 
 ## Install
 
