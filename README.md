@@ -128,6 +128,7 @@ Once a project is scaffolded, `turn-flywheel` is the only one you type regularly
                                    # the close fires by itself when the story lands:
                                    # STATUS line, requirement rows, design amendments, rewrite the pointer
 /clear                             # then wipe the context — the next turn must cold-start from the pointer
+                                   # (or, when only you can act next, the close parks the workstream and names your action)
 ```
 
 **It starts the work when there's nothing to pick.** If the pointer names one specific story, it's unblocked, nothing diverged, and its ACs are specific enough to build against, the session says what it's starting and starts. Stopping to ask about a single candidate spends your attention on a rubber stamp. It still stops — every time — for two live candidates, an open decision or spike, a divergence the verification turned up, or scope it would have to invent. `/flow:turn-flywheel ask` forces the propose-and-stop behavior on any run.
@@ -139,6 +140,8 @@ Once a project is scaffolded, `turn-flywheel` is the only one you type regularly
 **Close every session, including the ones where nothing landed.** A session that only discovered a blocker produces the most valuable pointer update available — and skipping the close is the single thing that degrades the whole system into three files nobody trusts.
 
 **Then `/clear`.** This isn't just about keeping the context window lean, though it does that. The pointer only works if it is genuinely the thing the next session starts from. Carry a warm context across the boundary and the next turn quietly runs on remembered detail instead — so a pointer that is thin, stale, or wrong still *feels* fine, and you find out weeks later when someone else opens it cold. Clearing is what proves the pointer carries its own weight.
+
+**Unless the next move is yours.** When no session can start anything and every remaining item needs a person — a 👤 check, an account, a step on hardware — the close *parks* the workstream: it names the one action that wakes it, and that action is the last line, not `/clear`. Before it parks, it looks for prep that makes your part smaller (screenshots for a check, the exact commands in order). Opening a parked workstream before you act gets a few-line report; telling it the action is done gets a short close that ticks the clause.
 
 It also keeps the close honest in the other direction: if you can still see the whole session, it's tempting to skip the rejected option or the untested path because everything is obviously in your head. It won't be tomorrow.
 
