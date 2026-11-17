@@ -20,7 +20,9 @@ gate to the developer. Where the two differ, this skill supersedes it; that is a
 documents, so it needs no memo. Refresh the project's `AGENTS.md` section at the next
 close if it is materially stale. **"One unit of work per session" in a project protocol is
 that skew too**: since 1.10.0 a session takes a batch (see **A batch**). A project that
-wants fewer lanes says so with a number, for example "a batch holds one lane".
+wants fewer lanes says so with a number, for example "a batch holds one lane". **A protocol
+that ends every close with `/clear`, even when no session can start anything, is skew as
+well**: since 1.11.0 such a close parks the workstream (see **A parked workstream**).
 
 **Know which version is governing before you rely on a rule that changed.** A project
 document may name a version this skill has not reached yet, and `AGENTS.md` cannot tell
@@ -84,6 +86,35 @@ mode** — there is no unit, so there is no landing point, and a ten-step checkl
 is noise. Rewrite the pointer only when verification found a divergence; that rewrite is a
 commit, and it is the one thing a dormant open can land. If the human brings work, it is
 scope the pointer does not name — present it and stop, per **Presenting a decision**.
+
+### A parked workstream — it waits on a person
+
+**A workstream is parked when no session can start a unit and every remaining item needs a
+person**: a 👤 clause, an action on hardware or an account, or a step outside the repository
+that a session must not take. Parked is not dormant. A dormant workstream is paused by
+choice. A parked workstream waits on one named action, and that action wakes it.
+
+- **The close parks it.** Part 2 writes `Parked: waits on <person> to <action>` into the
+  pointer's goal, and step 8 puts the same words on the workstream's line of the root index.
+  Name ONE action, the one that unblocks the most, and point to the rest of the queue.
+- **Look for prep before you park.** A session can still make the person's part smaller: it
+  produces the evidence that a 👤 clause asks for (screenshots, a measured value, a dry run),
+  or it writes the exact commands of the action in order. **A prep step is a startable
+  unit.** When one exists, name it as the next unit and do not park. Prep runs once for each
+  action: when the prep is done, the next close parks.
+- **A parked open whose action is not done is a verify-and-report**, the same as a dormant
+  open: verify, report in a few lines, repeat the action, and end. No close.
+- **A parked open whose action is done wakes the workstream.** The person says so in the
+  argument or in the conversation, or verification measures it. Check the clause that the
+  person checked, on the person's word and never by inference. Then run a short close: Part 2
+  steps 6, 8, 9 and 10, in one commit. When a unit can start again, the workstream is live.
+- **Park only on an action, never on a decision.** A choice that the person owns is a stop,
+  per **Presenting a decision**.
+
+**Why:** a close that ends in `/clear` when no session can start anything sends the person
+to open a session that can only report that it waits on them. Each 👤 check then costs a
+full open and close around it. Parking puts the person's action at the bottom of the
+message, where it is the next thing that happens.
 
 ## 2. Verify before trusting — the load-bearing step
 
@@ -328,28 +359,38 @@ waiting for an answer, that is the choice: options, recommendation, nothing afte
 When the session has closed and the next action is `/clear`, the `/clear` sentence is last —
 even when the close's report presented choices above it, because those went into the
 pointer's queue for a later human and are not being asked now. A choice above a `/clear`
-sentence is a queued choice; a choice at the very end is a live one. (In LOOP MODE the
-outcome block comes after either and repeats it.)
+sentence is a queued choice; a choice at the very end is a live one. **When the close parks
+the workstream, the person's action is last, not `/clear`** — see **Last line of a close**.
+(In LOOP MODE the outcome block comes after any of these and repeats it.)
 
 Where a structured choice prompt is available, use it, with the recommended option
 first. A recommendation is never a default: do not begin the recommended option while
 waiting for the answer, and do not re-ask a decision the human has already made.
 
-**A blocker that has stopped the next unit for three closes is itself a finding.**
-Not every long-lived entry qualifies — a judgment the human is right to sit on can
-wait indefinitely, and re-raising it is noise. The rule fires on the entry that
-**blocks the work**: when you are about to copy one forward unchanged again,
-**re-examine the frame rather than the options.**
+**A queue entry that has blocked the next unit for three closes, unchanged, is itself a
+finding.** Count one entry, not a sentence. **A pointer sentence such as "no session can
+start a unit" is not an entry**: it can repeat at every close while each close clears a
+different item, and that is progress. An entry has progress when a clause under it is
+checked, its action is partly done, or its options changed. To count, write on the entry
+the date it entered the queue (`since 2026-11-06`), and count the closes since that date in
+the `git log` of the pointer. A judgment the human is right to sit on does not count, and
+neither does an entry the human put last on purpose.
 
-- **Is it actually unmeasurable, or only unread?** Run the previous section. A
-  question that eight closes called impossible is usually one nobody tried to
-  measure.
-- **Are all the options "the human does X"?** Then the option set is the problem,
-  not the human's silence. **An option set with no cheap session action in it is
-  incomplete** — find one, or say plainly that you looked and there is none.
-- **Say the count out loud** when you present it: *"this has blocked the next unit
-  for four closes"* is information the human does not otherwise have, and it is
-  what tells them the framing has gone wrong.
+**When the rule fires, do not copy the entry forward a fourth time. Take one exit:**
+
+- **Measure it.** Is it unmeasurable, or only unread? Run the previous section. A question
+  that eight closes called impossible is usually one that nobody tried to measure.
+- **Prep it.** Take the session step that makes the person's part smaller, per **A parked
+  workstream**, and do it now.
+- **Reframe it.** Are all the options "the human does X"? Then the option set is the
+  problem. Propose an amendment as a choice in the queue: defer the clause, split it, or
+  replace the person's check with a test.
+- **Park it**, when nothing else can start, per **A parked workstream**. A parked
+  workstream has taken its exit, and the rule does not fire on its action again until it
+  wakes.
+
+**Say the count out loud** with the exit: *"this entry has blocked the next unit for four
+closes"* is information the human does not otherwise have.
 
 **In LOOP MODE this stop also writes a `decision` block**, and the options of the block
 are the options above. See **LOOP MODE** at the end of this file.
@@ -423,10 +464,13 @@ of these is true:
   session.
 - **Context is materially consumed**, or a compaction has already happened. Landing
   early with an honest pointer beats being cut off mid-story with none.
+- **A parked workstream wakes**: the person reports its action done. The close is short
+  (see **A parked workstream**).
 
 **Not a landing point:** a stop that is waiting for the human's answer (see **A stop is
-not a close**), and a dormant-workstream open whose verification came back clean (see
-**A dormant workstream**). The first stays open; the second reports and ends.
+not a close**), and a dormant or parked open whose verification came back clean and whose
+action is not done (see **A dormant workstream** and **A parked workstream**). The first
+stays open; the second reports and ends.
 
 **One batch per session.** After the close, the session is over — say so and
 stop. Do not open again in the same context, however much room is left: an auto-reopen
@@ -441,7 +485,7 @@ Two parts. Part 1 runs once per story that landed. Part 2 runs once per session,
 **including a session where nothing landed but something was learned** — a blocker, a
 divergence, an answer that went into the queue — because that session has produced the
 most valuable pointer update available. **It does not run for a session that learned
-nothing**: a dormant-workstream open with every verification step green, or a stop that
+nothing**: a dormant or parked open with every verification step green, or a stop that
 is still waiting for its answer. A close that rewrites the pointer to say what it already
 said is not a close; it is a checklist with nothing under it.
 
@@ -494,6 +538,9 @@ said is not a close; it is a checklist with nothing under it.
 
    **Every entry in the decision queue is written as a choice**, per **Presenting a
    decision**: the options, what each costs, and the recommendation with its reasoning.
+   **Each entry carries the date it entered the queue** (`since <date>`), and a close keeps
+   the date while the entry is unchanged. The three-close rule counts from it. A close that
+   parks the workstream writes `Parked: waits on <person> to <action>` in the goal section.
    A queue entry phrased as a bare question makes the human do the analysis this
    session already did and then threw away.
 
@@ -523,7 +570,8 @@ said is not a close; it is a checklist with nothing under it.
    ADRs and epic files are the exception and keep the dated amendment. A design
    doc's `Rejected:` line is replaced when the option is taken up.
 8. **Root `NEXT_SESSION.md` index** — update this workstream's line if its state
-   changed. Other workstreams' lines are theirs; correct one only if you have
+   changed. A close that parks the workstream writes `Parked: waits on <person> to
+   <action>` on the line; a close that wakes it removes the word. Other workstreams' lines are theirs; correct one only if you have
    direct evidence it is wrong, and say that you did.
 9. **Re-read the phase gate, clause by clause.** Check only clauses that are
    objectively true now. A clause phrased as something a *person* does is not
@@ -545,10 +593,16 @@ said is not a close; it is a checklist with nothing under it.
 Then report the checklist explicitly: which of the ten were done, which were N/A
 and why. A silent skip is indistinguishable from a forgotten one.
 
-## Last line of a close: tell the human to `/clear`
+## Last line of a close: the next action
 
-End the close by saying the session is landed and the next turn should start from a
-cleared context.
+**When a session can start the next unit, the last line is `/clear`**: say that the session
+is landed and that the next turn starts from a cleared context.
+
+**When the close parked the workstream, the last line is the person's action.** Name it in
+one line, and say that no session is needed until it is done. Write the `/clear` sentence
+above it: "after that, `/clear` and open the workstream". **A bare `/clear` at the end of a
+parked close is a defect**: it sends the person to a session that can only report that it
+waits on them.
 
 This is not housekeeping. The pointer is only load-bearing if it is genuinely what
 the next session starts from. A context carried across the boundary lets the next
@@ -569,8 +623,9 @@ Do not repeat it.
 **In LOOP MODE the close ends with an outcome block, and the block is the last thing in
 the message.** Write the `/clear` sentence above it. A close that landed work and named the
 next unit writes a `continue` block. A close that landed the LAST unit writes a `done` block
-that carries `story` and `landed`. A close that landed nothing writes the block that states
-why. See **LOOP MODE** below.
+that carries `story` and `landed`. A close that parked the workstream writes a `done` block
+whose `reason` names the person's action. A close that landed nothing writes the block that
+states why. See **LOOP MODE** below.
 
 ---
 
@@ -756,6 +811,7 @@ name. The close still rewrites the pointer, and the block does not report it.
 | finds an empty backlog | `done` |
 | lands the LAST unit of the backlog, and nothing remains | `done`, with `story` and `landed` |
 | reaches a phase gate holding a clause a session cannot verify | `done` |
+| parks the workstream on a person's action, per **A parked workstream** | `done`, and `reason` names the action |
 
 **A stop and a fork are the same event.** Every stop that this skill names above is a
 `decision` block: two or more unblocked candidates that cannot share a batch, a divergence that changes the work, an
@@ -773,7 +829,8 @@ decision's options and its recommendation first. **Do not write `done` because a
 blocked on a question**: the runner carries a `decision` to the developer's phone and resumes
 the session with the answer, and a `done` ends the run with the question unasked. The other
 decisions stay in the pointer, and the next stop raises the next one. **`done` is for a
-blocker that no answer removes** — an empty backlog, an outside dependency, a gate clause.
+blocker that no answer removes** — an empty backlog, an outside dependency, a gate clause, a
+parked action.
 
 ## A choice the loop session takes itself
 
@@ -895,6 +952,9 @@ recorded. Nothing else.
 - **A stop is a choice, not a question.** Options, costs, and a recommendation with
   its reasoning where you have grounds — in the session, in a memo, and in the
   pointer's decision queue alike.
+- **A close ends on the next action.** That is `/clear` when a session can start the next
+  unit, and the person's action when the workstream is parked. A session that can only
+  report "it waits on you" is a session that nobody needed.
 - **The pick stays human whenever there is a pick to make.** One unambiguous
   candidate is not a choice, and neither is a batch of every live unit that passes on
   its own; stopping to ask about either just spends a human's
