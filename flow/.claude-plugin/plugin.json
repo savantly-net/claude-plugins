@@ -1,6 +1,6 @@
 {
   "name": "flow",
   "description": "Spec-to-shipped workflow: idea → requirements → plan → a session process that compounds context across sessions and developers",
-  "version": "1.12.0",
+  "version": "1.13.0",
   "license": "Apache-2.0"
 }
