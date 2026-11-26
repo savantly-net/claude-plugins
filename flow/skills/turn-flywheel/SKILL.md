@@ -17,8 +17,9 @@ the opening and the close — because those are what erode, and their failure is
 `/create-flywheel` may carry an older protocol in its `AGENTS.md` — one that says the
 session always stops for the pick, waits to be told to close, or hands every phase
 gate to the developer. Where the two differ, this skill supersedes it; that is a version skew, not a conflict between two decided
-documents, so it needs no memo. Refresh the project's `AGENTS.md` section at the next
-close if it is materially stale. **"One unit of work per session" in a project protocol is
+documents, so it needs no memo. When the project's `AGENTS.md` section is materially
+stale, name `/flow:upgrade-flywheel` in the session's report; it replaces the stale scaffold
+text in its own commit, apart from the unit's work. **"One unit of work per session" in a project protocol is
 that skew too**: since 1.10.0 a session takes a batch (see **A batch**). A project that
 wants fewer lanes says so with a number, for example "a batch holds one lane". **A protocol
 that ends every close with `/clear`, even when no session can start anything, is skew as

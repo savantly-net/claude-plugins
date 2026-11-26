@@ -2,7 +2,7 @@
 
 Open-source Claude Code plugins from [Savantly](https://savantly.net). We built them for our own team and use them on client and internal projects.
 
-Currently one plugin: **`flow`** — the spec-to-shipped workflow, five skills that hand off to each other. They plan the requirements, scope and architecture before any code gets written, then carry the design decisions from one session to the next, so a project stays well architected as it gets large.
+Currently one plugin: **`flow`** — the spec-to-shipped workflow, six skills that hand off to each other. They plan the requirements, scope and architecture before any code gets written, then carry the design decisions from one session to the next, so a project stays well architected as it gets large.
 
 ## Install
 
@@ -51,6 +51,10 @@ Alphabetical order in the `/` menu doesn't match the order you use these in. Thi
                 /flow:turn-flywheel
           open a session · do the work · close it
        (open it each session; it closes itself)
+
+               /flow:upgrade-flywheel
+        brings an installed process up to the
+       current plugin version (after an update)
 ```
 
 | Skill | Takes | Produces |
@@ -60,6 +64,7 @@ Alphabetical order in the `/` menu doesn't match the order you use these in. Thi
 | `/flow:create-blueprint` | Either of the above | `plan/` — MVP scope, epics, stories, designs, phases |
 | `/flow:create-flywheel` | A plan, or an existing codebase | The tracked docs and the session protocol in `AGENTS.md` |
 | `/flow:turn-flywheel` | A scaffolded project | An oriented session at the start — working on the next unit already, if only one is live — and a landed one at the end |
+| `/flow:upgrade-flywheel` | A project an earlier version scaffolded | The current protocol, caps and Action classes block, in one commit, with every project fact kept |
 
 Each skill is interactive and stops for human review between phases. None of them estimate time or cost.
 
@@ -83,8 +88,9 @@ Rule of thumb: if answering "should we build this?" makes you say *"well, it dep
 | `create-spec` | A charter, RFP, or napkin idea needs to become something you can plan against | The source doc, or be ready to talk it through | Once per project |
 | `analyze-fit` | Someone asks "can we add X?" and the honest answer needs the codebase | A description of the idea; run it **from the repo in question** | Once per feature idea |
 | `create-blueprint` | Requirements are settled and you need scope, epics, and a build order | A directory with `requirements/` + `architecture/` | Once per project (again after a major re-scope) |
-| `create-flywheel` | A plan is ready to be worked — or an existing project needs the process retrofitted | The plan directory, or just the repo | **Once per project, ever** |
+| `create-flywheel` | A plan is ready to be worked — or an existing project needs the process retrofitted | The plan directory, or just the repo | **Once per project, ever** — later versions arrive through `upgrade-flywheel` |
 | `turn-flywheel` | You're sitting down to work | Nothing | **Once at the start — the close fires itself** |
+| `upgrade-flywheel` | The plugin updated and the project's `AGENTS.md` protocol lags behind it | A clean working tree | After a plugin update that changed the scaffold |
 
 ### What a run feels like
 
@@ -186,15 +192,15 @@ Earlier versions wrote a `docs/history/<story-id>.md` narrative at every landing
 
 ## Contributing
 
-Skills live in `flow/skills/<name>/SKILL.md`, with supporting files (`phases.md`, `templates.md`, `output-structure.md`, `adr-template.md`) alongside. `flow/reference/writing-style.md` is shared by all five — it is the one place the artifact writing rules are defined, and each skill points at it by relative path.
+Skills live in `flow/skills/<name>/SKILL.md`, with supporting files (`phases.md`, `templates.md`, `output-structure.md`, `adr-template.md`) alongside. `flow/reference/writing-style.md` is shared by all six — it is the one place the artifact writing rules are defined, and each skill points at it by relative path.
 
 The skills reference each other by slash command. If you rename one, sweep every reference — a half-done rename breaks the handoff between skills silently, which is the failure mode this whole system is built to avoid:
 
 ```
-grep -rn "/flow:\|/create-spec\|/analyze-fit\|/create-blueprint\|/create-flywheel\|/turn-flywheel" flow/skills/
+grep -rn "/flow:\|/create-spec\|/analyze-fit\|/create-blueprint\|/create-flywheel\|/turn-flywheel\|/upgrade-flywheel" flow/skills/
 ```
 
-Bump `version` in both `.claude-plugin/marketplace.json` and `flow/.claude-plugin/plugin.json` when you change a skill.
+Bump `version` in both `.claude-plugin/marketplace.json` and `flow/.claude-plugin/plugin.json` when you change a skill. When a change to `create-flywheel/templates.md` changes what a project holds on disk, not only the protocol text, add it to **Changes that touch the files** in `upgrade-flywheel/SKILL.md`.
 
 ## License
 

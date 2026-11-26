@@ -190,8 +190,10 @@ These apply to every tracked file: requirements, ACs, designs, `STATUS.md` lines
 
 ## 7. AGENTS.md section (append; reconcile if one exists)
 
+`<version>` is the `version` field of this plugin's `.claude-plugin/plugin.json`. `/upgrade-flywheel` reads the stamp to know where a project starts.
+
 ```markdown
-## Dev process — the session flywheel (installed <date>)
+## Dev process — the session flywheel (flow <version>, installed <date>)
 
 **Where things live:**
 

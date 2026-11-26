@@ -54,7 +54,7 @@ Determine the mode and confirm both mode and target layout with the user before 
 3. **Create `docs/HANDBOOK.md`** (seeded with the universal conventions from `templates.md`; project-specific traps accumulate later), and **`docs/limits.json`** with the cap check wired into the project's test command (`templates.md` §8). Set each cap to the file's size now, rounded up to the next 1 000 bytes.
 4. **Set up the pointers** — per the "Set up the pointers" section below. At minimum: a root `NEXT_SESSION.md` index and one workstream pointer.
 5. **Annotate epic files** with the definition-of-done header note.
-6. **Write the session protocol into `AGENTS.md`** (or `CLAUDE.md` if that's the repo's convention) — this is the load-bearing step; without it the files are furniture. Append, never overwrite; if a "where things live" section already exists, reconcile.
+6. **Write the session protocol into `AGENTS.md`** (or `CLAUDE.md` if that's the repo's convention) — this is the load-bearing step; without it the files are furniture. Append, never overwrite; if a "where things live" section already exists, reconcile. Stamp the section heading with the plugin version, per `templates.md` §7.
 
 ### 3. Set up the pointers (ask before assuming)
 
@@ -94,7 +94,7 @@ Summarize what was created and state the first pointer's goal. Remind the user: 
 
 ## Behavior rules
 
-- **Never overwrite existing files without asking** — especially requirements/plan docs (they are someone's decisions) and any existing STATUS/NEXT_SESSION (offer merge).
+- **Never overwrite existing files without asking** — especially requirements/plan docs (they are someone's decisions) and any existing STATUS/NEXT_SESSION (offer merge). A project that an earlier version already scaffolded needs `/upgrade-flywheel`, not a second scaffold.
 - **Never fabricate a status.** Greenfield rows are ⬜; adopt-mode rows come from the audit or stay flagged. A wrong ✅ is worse than a stale ⬜.
 - **Scaffolded text is one sentence per rule.** No restatement, no persuasion, no second sentence that says the first one again. The scaffold is read every session by every developer, and it is capped.
 - **Write every scaffolded file in Simplified Technical English** — the rules are in `../../reference/writing-style.md`, and they are installed into the project's `HANDBOOK.md` and `AGENTS.md` so later sessions keep to them. Existing requirement and plan text is **not** restyled: its wording is someone's decision.
