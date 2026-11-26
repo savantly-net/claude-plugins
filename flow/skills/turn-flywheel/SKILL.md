@@ -22,7 +22,9 @@ close if it is materially stale. **"One unit of work per session" in a project p
 that skew too**: since 1.10.0 a session takes a batch (see **A batch**). A project that
 wants fewer lanes says so with a number, for example "a batch holds one lane". **A protocol
 that ends every close with `/clear`, even when no session can start anything, is skew as
-well**: since 1.11.0 such a close parks the workstream (see **A parked workstream**).
+well**: since 1.11.0 such a close parks the workstream (see **A parked workstream**). **A
+protocol that hands the person a step the session could take after one yes is skew too**:
+since 1.12.0 an action runs by its class (see **Who acts**).
 
 **Know which version is governing before you rely on a rule that changed.** A project
 document may name a version this skill has not reached yet, and `AGENTS.md` cannot tell
@@ -90,8 +92,9 @@ scope the pointer does not name — present it and stop, per **Presenting a deci
 ### A parked workstream — it waits on a person
 
 **A workstream is parked when no session can start a unit and every remaining item needs a
-person**: a 👤 clause, an action on hardware or an account, or a step outside the repository
-that a session must not take. Parked is not dormant. A dormant workstream is paused by
+person**: a 👤 clause, or a human-only action (see **Who acts**). An action of class `ask`
+does not need the person to act: the session asks once and acts, so it never parks a
+workstream. Parked is not dormant. A dormant workstream is paused by
 choice. A parked workstream waits on one named action, and that action wakes it.
 
 - **The close parks it.** Part 2 writes `Parked: waits on <person> to <action>` into the
@@ -99,17 +102,22 @@ choice. A parked workstream waits on one named action, and that action wakes it.
   Name ONE action, the one that unblocks the most, and point to the rest of the queue.
 - **Look for prep before you park.** A session can still make the person's part smaller: it
   produces the evidence that a 👤 clause asks for (screenshots, a measured value, a dry run),
-  or it writes the exact commands of the action in order. **A prep step is a startable
-  unit.** When one exists, name it as the next unit and do not park. Prep runs once for each
-  action: when the prep is done, the next close parks.
+  or it rehearses the action and measures what the action needs. **A prep step is a
+  startable unit.** When one exists, name it as the next unit and do not park.
+- **Prep ends in a request, not a procedure.** When the prepared steps are authorized
+  actions, the prep ends in one approval request, per **Ask once, for the whole batch**, and
+  the session runs the steps after the yes. Write steps for the person only for the part
+  that is human-only. Prep runs once for each action: when the prep is done and only a
+  human-only part remains, the next close parks.
 - **A parked open whose action is not done is a verify-and-report**, the same as a dormant
   open: verify, report in a few lines, repeat the action, and end. No close.
 - **A parked open whose action is done wakes the workstream.** The person says so in the
   argument or in the conversation, or verification measures it. Check the clause that the
   person checked, on the person's word and never by inference. Then run a short close: Part 2
   steps 6, 8, 9 and 10, in one commit. When a unit can start again, the workstream is live.
-- **Park only on an action, never on a decision.** A choice that the person owns is a stop,
-  per **Presenting a decision**.
+- **Park only on a human-only action, never on a decision and never on an `ask` action.** A
+  choice that the person owns is a stop, per **Presenting a decision**. An `ask` action is a
+  stop with one approval request.
 
 **Why:** a close that ends in `/clear` when no session can start anything sends the person
 to open a session that can only report that it waits on them. Each 👤 check then costs a
@@ -176,7 +184,70 @@ decisions — **that is usually where the coupling is already written down, unre
 **A session never merges a branch that touches migrations**, and never treats
 "just push it and see" as free until it has answered these. The two halves of this
 section are one rule: **measure instead of assuming, and know what the measurement
-costs before you take it.**
+costs before you take it.** **Then classify the action**, per **Who acts** below: the answers
+to these questions are the properties that pick its class.
+
+### Who acts — a decision, an authorized action, or a human-only action
+
+**Every stop is one of three kinds. Classify it before you stop, park, or give a step to a
+person.** The kind decides who acts, and a wrong kind is the most expensive error in this
+skill: a decision taken by a session overrules the developer, and an action handed to the
+developer spends a session on work that a session could do.
+
+| Kind | The test | What the session does |
+|---|---|---|
+| **Decision** | It sets or changes an architecture choice, a business rule, a contract, a requirement, an acceptance criterion, or the scope of a unit; or two decided documents conflict. | Stop, per **Presenting a decision**. Always human, whatever the mapping says. |
+| **Authorized action** | It is mechanical: a decided document, or the developer's answer in this session, already fixes what it does. The project maps its class to `run` or `ask`. | `run`: take it, and record it. `ask`: ask once for the whole batch, then take it. |
+| **Human-only action** | A measurement shows that the session cannot reach the system, or the project maps the class to `human`. | Park, per **A parked workstream**. |
+
+#### Action classes
+
+**This skill names the classes. The project maps each class** to `run`, `ask` or `human`, in
+the section **Action classes** of its `AGENTS.md`. **A class that the project does not map is
+`ask`.** A mapping names classes only. A project may add a note that names its own systems;
+this skill names none.
+
+| Class | The action |
+|---|---|
+| `local` | It changes the working copy only: files, branches, commits. Always `run`; a project cannot map it. |
+| `branch-share` | It pushes a branch that only this work uses, or opens a draft change request. |
+| `shared-change` | It merges into a branch that other people build on, or it writes where other people work: a comment, a review, an issue. |
+| `publish` | It releases an artifact that other people consume: a package, an image, a version tag. |
+| `test-environment` | It changes an environment that the project owns and that serves no customer: its configuration, its secrets, a one-off job. |
+| `production` | It changes an environment that serves customers, or it changes customer data. |
+| `spend` | It costs money, or it calls a third party for real: mail, messages, paid calls. |
+
+**Judge each action by five properties, and take the strictest class that applies:** can a
+later step undo it; does it reach people outside the session; does it touch production or
+customer data; does it cost money; does it publish something that other people consume.
+
+🔴 **A mapping never turns a decision into an action**, and it never lifts a hard rule of
+this skill: a session never merges a branch that touches migrations, whatever the class says.
+
+#### Ask once, for the whole batch
+
+**When the work reaches `ask` actions, collect every one that the unit needs, in order, and
+ask for them in one message.** For each step, give its class, what it does outside the
+repository (the guard above), and how a later step undoes it. The developer approves all of
+them, some of them, or none. A yes covers the listed steps in this session only.
+
+- **Run each step's read-only preview first**, when one exists: a dry run, a plan, a diff.
+  When the preview differs from what the message said, stop and show it.
+- **Stop at the first step whose result differs from what the message said.** Report what
+  ran, what did not, and the state that the stop left.
+- **A step that writes a secret makes the value inside the step.** The session never prints
+  the value and never reads it back.
+
+#### Precedent counts
+
+**Before you call an action human-only, read the record**: the commit messages, the pointer,
+and the bodies of the change requests. When a session already took this class of action with
+the developer's approval, the class is at least `ask`, unless the project maps it to `human`.
+**A precedent never makes a class `run`.**
+
+**"No access" is a measurement, not an assumption.** Run the cheapest read-only command that
+shows whether the session can reach the system, per **"I cannot read it" is not "I cannot
+measure it"**.
 
 ## 3. Choose the work
 
@@ -290,9 +361,10 @@ and name the rest as next.
 - The work needs an answer from the decision queue, or from `STATUS.md`'s open
   decisions.
 - Adopt-mode audit items awaiting disposition on the same surface.
-- The "unit" is a release, or anything outward-facing and hard to reverse. **A phase
-  gate is a stop only when a clause is unchecked, or when closing it is itself
-  outward-facing** — see **Closing a phase gate** below.
+- The work reaches an action whose class is `ask` or `human` (see **Who acts**). An `ask`
+  stop is one approval request for the whole batch, and the session runs the steps after
+  the yes. **A phase gate is a stop only when a clause is unchecked, or when closing it is
+  itself outward-facing** — see **Closing a phase gate** below.
 - The `ask` argument was passed.
 
 **In LOOP MODE, two of these stops come first to a test.** The first bullet is an ordering
@@ -381,7 +453,8 @@ neither does an entry the human put last on purpose.
 - **Measure it.** Is it unmeasurable, or only unread? Run the previous section. A question
   that eight closes called impossible is usually one that nobody tried to measure.
 - **Prep it.** Take the session step that makes the person's part smaller, per **A parked
-  workstream**, and do it now.
+  workstream**, and do it now. When the person's part is an authorized action, the exit is
+  the approval request, not a written procedure.
 - **Reframe it.** Are all the options "the human does X"? Then the option set is the
   problem. Propose an amendment as a choice in the queue: defer the clause, split it, or
   replace the person's check with a test.
@@ -811,6 +884,8 @@ name. The close still rewrites the pointer, and the block does not report it.
 | finds an empty backlog | `done` |
 | lands the LAST unit of the backlog, and nothing remains | `done`, with `story` and `landed` |
 | reaches a phase gate holding a clause a session cannot verify | `done` |
+| reaches an authorized action of class `run`, per **An authorized action** | no block — take it, record it in `decided` with `kind: "action"`, and keep working |
+| reaches authorized actions of class `ask` | `decision`, with key `1` to run the listed steps and key `2` to decline them |
 | parks the workstream on a person's action, per **A parked workstream** | `done`, and `reason` names the action |
 
 **A stop and a fork are the same event.** Every stop that this skill names above is a
@@ -837,7 +912,8 @@ parked action.
 **A run is worth what it builds between two contacts with the developer.** A stop that the
 developer answers by approving the recommendation costs a message, a wait, and often the
 rest of the run. **In loop mode the session therefore takes two kinds of choice itself**,
-and it records each one. Every other choice is a `decision`, exactly as before.
+runs the actions of class `run` (see **An authorized action**), and it records each one.
+Every other choice is a `decision`, exactly as before.
 
 ### An ordering choice
 
@@ -876,7 +952,8 @@ unblocks the most later units; else the unit that comes first in `STATUS.md`.
    the repository changed: no push, no deploy, no message, no new dependency, no spend.
 
 🔴 **These are never taken, whatever the recommendation:** a gate clause, a 👤 criterion, an
-outward-facing action, and anything that **Always stop, regardless** names.
+outward-facing action that the project does not map to `run`, and anything that **Always
+stop, regardless** names.
 
 ### The record
 
@@ -905,10 +982,37 @@ outward-facing action, and anything that **Always stop, regardless** names.
 }
 ```
 
-`decided` is optional and it raises no version. Each entry carries `kind` — `ordering` or
-`option` — and `question`, `choice` and `reason`, each one sentence. **It rides a `done`
+`decided` is optional and it raises no version. Each entry carries `kind` — `ordering`,
+`option` or `action` — and `question`, `choice` and `reason`, each one sentence. **It rides a `done`
 block too.** ⚠️ **A choice that failed a test is not in `decided`**; it is the `decision`
 block, or an entry of the decision queue.
+
+### An authorized action
+
+**An action is not a choice, and loop mode runs it by its class** (see **Who acts**). The
+action must serve the unit that the session builds, and a decision must already fix what it
+does.
+
+- **`run`:** take it without a stop. Record it in `decided` with `kind: "action"`: the
+  `question` names the step, the `choice` names its class, and the `reason` names the
+  decision that fixed it.
+- **`ask`:** write a `decision` block with two options. Key `1` runs the listed steps, and
+  key `2` declines them. The `question` names the steps in one sentence. After a `1`, run the
+  steps per **Ask once, for the whole batch**; after a `2`, park or name another unit.
+- **`human`:** park, per **A parked workstream**. The close writes `done`, and `reason` names
+  the action.
+
+```untethered-outcome
+{
+  "version": 1,
+  "outcome": "decision",
+  "question": "Run the 4 test-environment steps of item 12: fill two secrets, apply, run the migration job?",
+  "options": [
+    { "key": "1", "label": "Run the 4 steps of item 12" },
+    { "key": "2", "label": "Do not run them; park item 12" }
+  ]
+}
+```
 
 ## The block does not replace the prose
 
@@ -920,8 +1024,8 @@ that disagrees with the prose above it is a defect.
 ## What loop mode does not change
 
 Loop mode changes what the session **writes**. **It changes one thing that the session
-decides**: the two kinds of choice in **A choice the loop session takes itself**, each
-recorded. Nothing else.
+decides**: the two kinds of choice in **A choice the loop session takes itself**, and the
+actions of class `run`, each recorded. Nothing else.
 
 - The one-candidate test is unchanged for the unit itself. Loop mode does not lower the bar
   for an auto-start.
@@ -955,6 +1059,9 @@ recorded. Nothing else.
 - **A close ends on the next action.** That is `/clear` when a session can start the next
   unit, and the person's action when the workstream is parked. A session that can only
   report "it waits on you" is a session that nobody needed.
+- **A decision is the developer's, and an action belongs to its class.** Never park on an
+  action that the session could take after one yes, and never take a decision because a
+  class allows the action that follows it.
 - **The pick stays human whenever there is a pick to make.** One unambiguous
   candidate is not a choice, and neither is a batch of every live unit that passes on
   its own; stopping to ask about either just spends a human's

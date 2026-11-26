@@ -208,6 +208,7 @@ These apply to every tracked file: requirements, ACs, designs, `STATUS.md` lines
 - **A stop is not a close.** A stop ends the turn and waits in the same context: no pointer rewrite, no checklist, no `/clear` in a message that asks a question.
 - **A dormant workstream gets a verify-and-report, not a session.** Verify the pointer, report in a few lines, present what its decision queue still holds, and end. Rewrite the pointer only on a divergence.
 - **A parked workstream waits on one action by a person.** When no session can start a unit and every remaining item needs a person, look for a prep step that makes the action smaller; when there is none, the close parks the workstream and names the action in the pointer and on the index line. A parked open whose action is not done is a verify-and-report. One whose action is done gets a short close.
+- **Who acts:** a decision (architecture, business rule, contract, requirement, acceptance criterion, scope) is always the developer's. An action runs by its class in **Action classes** below: `run` without a stop, `ask` after one approval for the whole batch, `human` by a person. A class that is not listed is `ask`. Never park on an `ask` action, and before you call an action `human`, read the record for a session that already took it with approval.
 - **Session end:** rewrite your workstream's `NEXT_SESSION.md`, every section, against the new state, and update your line in the root index. A new trap or convention goes to `docs/HANDBOOK.md`; grep that file for the concept's nouns first, and correct the entry that exists.
 - **Every tracked document has a byte cap in `docs/limits.json`, and a test enforces it.** To add text, remove as much text as you add. A session that compacts a file lowers its cap in the same commit, and a session that raises one says so in its report.
 - **A decision of record is amended, and a knowledge file is replaced.** Requirement rows, ADRs and epic files keep the dated amendment, with the reasoning in the pull request body and the commit message. `AGENTS.md`, the handbook, `STATUS.md`, the design documents and the pointer are corrected by replacement: write what is true now, and let git hold the sentence you replaced.
@@ -221,6 +222,15 @@ These apply to every tracked file: requirements, ACs, designs, `STATUS.md` lines
 - **A conflict between two decided documents** gets a memo with the options and a recommendation. The pick stays human.
 - **Parallel work inside one unit:** when the design doc's Build Parts, or its interfaces, split the unit into parts that own separate files, build the parts at the same time with subagents, each in its own worktree. Write a shared interface first. Read-only research, test runs and review passes always qualify. The main session reads and verifies every part, integrates them, runs the full suite, and alone writes the close and acts outside the repository. Parallelism across units is a batch, inside one workstream.
 - **A batch:** when several units are live, each passes the one-candidate test on its own, and their files do not overlap, the session takes them together: one lane for each set of disjoint files, at most three lanes, at most one migration lane, and units that share a file in one lane in dependency order. The order of the pointer, then the unit that unblocks the most, then `STATUS.md` decides which units fill the lanes; a declared dependency is never overridden. Each unit lands in its own commit with its own Part 1, and the session runs one close. A batch never spans two workstreams.
+
+**Action classes** (the developer fills these in; a class that is not listed is `ask`; `local` is always `run`):
+
+- `branch-share`:
+- `shared-change`:
+- `publish`:
+- `test-environment`:
+- `production`:
+- `spend`:
 
 **Working in parallel:** one `NEXT_SESSION.md` for each workstream, committed and never gitignored. The decision queue is a queue a human reads, and an untracked pointer makes a handoff impossible. Separation comes from one file for each stream, not from hiding files from git.
 ```
