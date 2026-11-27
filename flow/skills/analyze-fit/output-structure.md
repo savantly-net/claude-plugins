@@ -14,7 +14,7 @@ docs/use-cases/<use-case-slug>/
 │   ├── functional.md              # FR-X.Y (Phase 5)
 │   └── non-functional.md          # NFR-N (Phase 5)
 ├── architecture/
-│   ├── overview.md                # how it sits in the existing system (Phase 6)
+│   ├── overview.md                # how it sits in the existing system + Expected changes (Phase 6)
 │   ├── components.md              # new + modified components (Phase 6)
 │   └── decisions/
 │       ├── adr-001-<topic>.md     # one per *new* decision introduced (Phase 6)

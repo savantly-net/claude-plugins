@@ -29,7 +29,10 @@ PROPOSED | ACCEPTED | DEFERRED
 - **Cost/Effort:** ...
 
 ## Recommendation
-[Your suggested option and why, but explicitly noted as a recommendation, not a decision]
+[Your suggested option and why, but explicitly noted as a recommendation, not a decision. When no requirement forces a one-way choice, prefer the option that is cheaper to undo.]
+
+## Reversibility
+**Two-way** (cheap to undo) | **One-way** (costly to undo). [What a reversal would touch, and which component boundary contains it. For a one-way choice, say what makes it one-way.]
 
 ## Decision
 [PENDING — to be finalized by human]
