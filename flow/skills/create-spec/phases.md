@@ -37,17 +37,39 @@ Wait for confirmation before proceeding.
 
 ## Phase 4: Non-Functional Requirements
 
-Extract the **HOW WELL** — performance, security, compliance, scalability, availability, observability, etc.
+Extract the **HOW WELL** — security, compliance, availability, maintainability, etc.
+
+### Performance, Scalability and Observability are opt-in
+
+**These three categories enter the spec only when the human asks for them.** An invented
+latency target, capacity number or metrics list becomes a constraint that every later design
+must honor, and nobody asked for it.
+
+Before you extract, ask one multi-select question: "Should the spec carry requirements for
+any of these: Performance, Scalability, Observability?" The recommended answer is **none**,
+unless the source states a target. When the source states one, quote it in the question, so
+the human sees what they keep or drop.
+
+For each category the human selects, choose with them:
+- **Only what the source states** — capture the stated targets word for word. Invent none.
+- **Propose targets** — draft targets, each marked PROPOSED, for the human to confirm.
+
+For each category the human does not select, write no rows. Write this line under the
+`non-functional.md` table: `Not specified (opted out <date>): <categories>.` Do not move
+them to Open Questions: the blueprint turns open questions into spikes.
+
+⚠️ **Audit logging that a regulation requires is Compliance or Security, not Observability.**
+The opt-out never removes it.
 
 For each:
 - **ID** (NFR-1, NFR-2, ...)
-- **Category** (Performance | Security | Compliance | Scalability | Availability | Observability | Maintainability)
+- **Category** (Security | Compliance | Availability | Maintainability, plus Performance | Scalability | Observability when opted in)
 - **Requirement** — measurable where possible
 - **Rationale**
 
 Pay special attention to security and compliance requirements implied by the client's industry or domain (e.g., government/defense work implies FedRAMP, ITAR, data sovereignty concerns).
 
-Present and ask: "Any non-functional requirements I missed? Are the targets realistic?"
+Present and ask: "Any non-functional requirements I missed?" Add "Are the targets realistic?" when a target-bearing category was opted in.
 
 Wait for confirmation before proceeding.
 

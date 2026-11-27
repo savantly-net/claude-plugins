@@ -40,5 +40,6 @@ Phase details are in `phases.md`. Output structure is in `output-structure.md`. 
 - **Be concrete in designs.** API endpoints, data models, interface signatures — not hand-wavy descriptions. If you don't have enough information, flag it as a spike.
 - **Flag risks, don't hide them.** If something seems hard, under-specified, or likely to cause problems, surface it in the spikes phase.
 - **Every decision is presented as a choice, not a question.** When a phase needs a decision rather than a confirmation, name the two or three real options, say what each costs and what each unblocks, and give a recommendation with its reasoning where you have grounds for one — say plainly when you have none. An invented recommendation is worse than no recommendation. Where a structured choice prompt is available, use it, with the recommended option first. A recommendation is never a default: do not proceed on it while waiting for the answer.
+- **Add no Performance, Scalability or Observability work the spec did not ask for.** A `Not specified (opted out …)` line in `non-functional.md` means no metrics, load tests, capacity sizing or tuning stories for those categories.
 - **Do not estimate time or cost.** No story points, no hour estimates, no timeline predictions. Sequencing and dependencies yes, duration no.
 - **Do not assign people or set dates.**

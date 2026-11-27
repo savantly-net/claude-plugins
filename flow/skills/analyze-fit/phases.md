@@ -116,8 +116,10 @@ From the chosen approach, extract requirements using the same format as `/create
 - ID, Requirement, Acceptance Criteria, Source
 
 **Non-functional requirements (NFR-N)** — the HOW WELL:
-- ID, Category (Performance | Security | Compliance | Scalability | Availability | Observability | Maintainability), Requirement, Rationale
+- ID, Category (Security | Compliance | Availability | Maintainability, plus Performance | Scalability | Observability when opted in), Requirement, Rationale
 - Inherit relevant NFRs from the existing codebase — if the project already has hard security / multi-tenant rules, restate them as NFRs here so the downstream plan respects them.
+- **Performance, Scalability and Observability are opt-in.** Before you extract, ask one multi-select question: "Should these requirements carry any of these: Performance, Scalability, Observability?" Recommend **none** unless the brief states a target; quote any stated target in the question. For a selected category, capture only stated targets, or propose targets marked PROPOSED, as the human chooses. For an unselected category, write no rows, and write `Not specified (opted out <date>): <categories>.` under the `non-functional.md` table.
+- ⚠️ **The opt-out never drops an inherited constraint.** A limit that the codebase already enforces (a timeout, a rate limit, a required log or metric) is a fact. Restate it whatever the answer. Audit logging that a regulation requires is Compliance or Security, not Observability.
 
 Keep this scoped to the feature — don't re-derive the whole system's requirements.
 

@@ -121,7 +121,7 @@ For each spike:
 
 Spikes should come from:
 - Technology choices that haven't been proven in this specific context
-- Performance targets (NFRs) that are ambitious
+- Ambitious Performance or Scalability NFRs, when the spec carries any
 - Integration points with external systems
 - Open questions that are marked as blockers
 
@@ -178,7 +178,7 @@ For each component identified in `architecture/components.md`, produce a technic
 [How failures are handled — retries, fallbacks, dead letters, escalation]
 
 ## Observability
-[What metrics, traces, and logs this component emits]
+[Only when the spec carries Observability NFRs: the metrics, traces and logs that satisfy them. Otherwise omit this section.]
 
 ## Build Parts
 [The pieces of this component that can be built at the same time: for each, the files it owns and the interface it builds against. Name the interface that must exist first. Write "One part" when nothing splits.]
@@ -202,7 +202,7 @@ Produce a provisioning plan for all infrastructure needed to run the system.
 For each piece of infrastructure:
 - **What** — service/resource name
 - **Where** — AWS region, EKS cluster, namespace
-- **Config** — key sizing and configuration decisions
+- **Config** — key configuration decisions. Sizing follows a Performance or Scalability NFR; without one, use the smallest size that runs the system, and say so
 - **Prerequisites** — what must exist before this can be provisioned
 - **Provisioning method** — Terraform, Helm, manual, etc. (suggest, don't decide)
 
@@ -225,7 +225,7 @@ Synthesize everything into a phased build plan. Each phase should:
 
 Phases should be ordered so that:
 1. Early phases deliver a working (if limited) end-to-end flow as soon as possible
-2. Later phases add breadth, scale, and polish
+2. Later phases add breadth and polish, and scale only where an NFR asks for it
 3. Spikes are front-loaded or run in parallel with early phases
 4. Each phase gate is objectively verifiable, **and each clause names what verifies it** — a
    clause only a person can check is marked 👤, because the flywheel will stop on it and hand
