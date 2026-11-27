@@ -19,7 +19,7 @@ Present and ask: "Does this MVP cut feel right? Anything to move in or out?"
 
 Write a brief MVP definition statement summarizing what the first release delivers and what it explicitly does not.
 
-**A Post-MVP item is a change the plan already knows about.** When one is not in the Expected changes table of `architecture/overview.md`, propose it as a new CH-N. The human confirms it before it goes in. When `overview.md` has no Expected changes table (a spec written before flow 1.14.0), ask the human "What do you expect to add or change after the first release?" here, and add the table.
+**A Post-MVP item is a change the plan already knows about.** When one is not in the Expected changes table of `architecture/overview.md`, propose it as a new CH-N, and name the component where it lands. The human confirms it before it goes in. A new CH-N that needs edits in several components points at a boundary: raise it now, before the designs. When `overview.md` has no Expected changes table (a spec written before flow 1.14.0), ask the human "What do you expect to add or change after the first release?" here, and add the table.
 
 Wait for confirmation before proceeding.
 
@@ -170,7 +170,7 @@ For each component identified in `architecture/components.md`, produce a technic
 [Specific endpoints, function signatures, message formats, or CLI commands this component exposes. Mark each one **public** (a consumer outside this system uses it) or **internal**. For a public one, state its compatibility rule: for example, additive changes only, and a breaking change gets a new version.]
 
 ## Change Points
-[For each expected change (CH-N) that lands in this component: the extension point, and what a developer adds to make the change. Aim for "add one file that implements `<interface>`, and register it", not "edit these five files". Write "None" when no CH-N lands here.]
+[For each expected change (CH-N) that lands in this component: the extension point, and what a developer adds to make the change. Aim for "add one file that implements `<interface>`, and register it", not "edit these five files". Write "None" when no CH-N lands here. When one CH-N shows up in the Change Points of several components, flag the boundary before you continue.]
 
 ## Data Model
 [Key entities, schemas, or state this component manages — tables, message shapes, config structures]
