@@ -17,6 +17,7 @@ Each phase has a **review gate** — present your work, wait for the user to con
    - Does this replace existing behavior or run alongside it?
    - Is this multi-tenant-aware from day one?
    - Is there a deadline or compliance reason driving it?
+   - What do you expect to add or change after this ships? (Record each confirmed answer as an expected change, CH-N, for Phase 6. Do not invent any.)
 5. Present summary + questions. Wait for answers.
 
 **Gate:** proceed only after the user confirms the summary and answers the material questions. It's fine to loop here — better to clarify now than in Phase 5.
@@ -135,9 +136,11 @@ Produce three artifacts:
 - Diagram (ASCII is fine) showing the feature's components alongside existing ones
 - Data flow for the primary use-case path
 - What's new, what's reused, what's modified
+- **Expected changes** — a table of the CH-N items from Phase 1: ID, Change, What varies, Source. For each, name the component where it lands. A CH-N that needs edits across several components points at a boundary to fix now, while the code is open.
 
 **architecture/components.md** — component-level detail:
-- For each new or modified component: responsibility, collaborators, where it lives in the codebase
+- For each new or modified component: its one responsibility, collaborators, where it lives in the codebase, the interface it exposes, and the decision it hides
+- Each new external system sits behind one component that owns it. Follow the codebase's existing pattern for this when it has one.
 - Reference the subsystems from the Phase 2 Impact Map
 
 **architecture/decisions/adr-NNN-<topic>.md** — one ADR per non-trivial decision introduced by this use-case. Use `adr-template.md`.

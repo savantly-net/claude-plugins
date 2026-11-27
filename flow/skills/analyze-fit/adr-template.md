@@ -32,7 +32,10 @@ PROPOSED | ACCEPTED | DEFERRED
 - **Fit with existing codebase:** ...
 
 ## Recommendation
-[Your suggested option and why, explicitly noted as a recommendation, not a decision. Lean toward options that match the codebase's existing direction unless there's a strong reason to diverge.]
+[Your suggested option and why, explicitly noted as a recommendation, not a decision. Lean toward options that match the codebase's existing direction unless there's a strong reason to diverge. When no requirement forces a one-way choice, prefer the option that is cheaper to undo.]
+
+## Reversibility
+**Two-way** (cheap to undo) | **One-way** (costly to undo). [What a reversal would touch, and which component boundary contains it. For a one-way choice, say what makes it one-way.]
 
 ## Decision
 [PENDING — to be finalized by human]

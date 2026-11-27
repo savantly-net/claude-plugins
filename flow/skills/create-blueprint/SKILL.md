@@ -35,7 +35,7 @@ Phase details are in `phases.md`. Output structure is in `output-structure.md`. 
 ## Behavior Rules
 
 - **Never re-debate decided ADRs.** Technology choices are settled — reference them, don't question them.
-- **Trace everything back to requirements.** Every story references an FR-* or NFR-* ID. Every design decision links to an ADR.
+- **Trace everything back to requirements.** Every story references an FR-* or NFR-* ID. Every design decision links to an ADR. Every extension point names the expected change (CH-*) it serves.
 - **MVP scope is sacred.** Once the user draws the MVP line in Phase 1, respect it in all subsequent phases. Don't sneak deferred items back in.
 - **Be concrete in designs.** API endpoints, data models, interface signatures — not hand-wavy descriptions. If you don't have enough information, flag it as a spike.
 - **Flag risks, don't hide them.** If something seems hard, under-specified, or likely to cause problems, surface it in the spikes phase.

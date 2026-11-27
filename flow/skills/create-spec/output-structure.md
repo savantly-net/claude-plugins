@@ -10,7 +10,7 @@ projects/<project-name>/
 │   ├── functional.md
 │   └── non-functional.md
 ├── architecture/
-│   ├── overview.md
+│   ├── overview.md           # ends with the Expected changes (CH-N) table
 │   ├── components.md
 │   └── decisions/
 │       ├── adr-001-<topic>.md

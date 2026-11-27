@@ -19,6 +19,8 @@ Present and ask: "Does this MVP cut feel right? Anything to move in or out?"
 
 Write a brief MVP definition statement summarizing what the first release delivers and what it explicitly does not.
 
+**A Post-MVP item is a change the plan already knows about.** When one is not in the Expected changes table of `architecture/overview.md`, propose it as a new CH-N. The human confirms it before it goes in. When `overview.md` has no Expected changes table (a spec written before flow 1.14.0), ask the human "What do you expect to add or change after the first release?" here, and add the table.
+
 Wait for confirmation before proceeding.
 
 ## Phase 2: Epics & Stories
@@ -68,6 +70,11 @@ has already built the story and cannot tick the box.
 a stopwatch. "`README.md` lists every install step, and a test asserts the script exits 0 on a
 clean checkout" needs a file. **The second is usually available, and it is usually the thing
 the first was really asking about.**
+
+**Write a criterion against the component's interface, not its internals.** "`POST /orders`
+returns 201 and the order appears in `GET /orders`" survives a rewrite of the order service.
+"`OrderRepository.insert` is called once" breaks at the first refactor, and a test that breaks
+on a correct change makes every later change more expensive.
 
 ⚠️ **Some criteria genuinely need a person** — a judgment about whether a message reads well, a
 timing a human experiences, a visual check. **Do not contort those into fake tests.** Mark them,
@@ -160,7 +167,10 @@ For each component identified in `architecture/components.md`, produce a technic
 [Reference the relevant ADR(s)]
 
 ## API / Interfaces
-[Specific endpoints, function signatures, message formats, or CLI commands this component exposes]
+[Specific endpoints, function signatures, message formats, or CLI commands this component exposes. Mark each one **public** (a consumer outside this system uses it) or **internal**. For a public one, state its compatibility rule: for example, additive changes only, and a breaking change gets a new version.]
+
+## Change Points
+[For each expected change (CH-N) that lands in this component: the extension point, and what a developer adds to make the change. Aim for "add one file that implements `<interface>`, and register it", not "edit these five files". Write "None" when no CH-N lands here.]
 
 ## Data Model
 [Key entities, schemas, or state this component manages — tables, message shapes, config structures]
@@ -188,6 +198,10 @@ For each component identified in `architecture/components.md`, produce a technic
 owns its files, and no other part touches them. Two pieces that need the same file are one
 part. Do not split for its own sake: a part that is smaller than its handoff costs more
 than it saves.
+
+⚠️ **Build an extension point only for a CH-N.** A plugin registry, strategy interface or
+config switch for a change nobody named is cost without a buyer. Everything else stays plain,
+and a later change edits it.
 
 If you don't have enough information to design a section concretely, mark it as `[NEEDS SPIKE: reference spike title]` rather than guessing.
 

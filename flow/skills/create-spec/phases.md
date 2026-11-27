@@ -69,6 +69,8 @@ For each:
 
 Pay special attention to security and compliance requirements implied by the client's industry or domain (e.g., government/defense work implies FedRAMP, ITAR, data sovereignty concerns).
 
+Write a Maintainability NFR as something a check can see, not a property. "The code is modular" cannot be checked. "Each external system is called from one module, and a test asserts no other module imports its client" can.
+
 Present and ask: "Any non-functional requirements I missed?" Add "Are the targets realistic?" when a target-bearing category was opted in.
 
 Wait for confirmation before proceeding.
@@ -77,11 +79,32 @@ Wait for confirmation before proceeding.
 
 Separate out the **HOW** — architecture, components, technologies, and patterns described in the source material. This is NOT requirements — this is the proposed technical approach.
 
+### First, ask what will change
+
+**A design is easy to change where it expected the change.** Before you draw components,
+ask the human: "What do you expect to add or change after the first release?" Offer the
+candidates the source suggests: a second vendor, new kinds of an entity, new rules, a new
+channel, a new client. Each answer the human confirms is an **expected change**:
+
+- **ID** (CH-1, CH-2, ...)
+- **Change** — what gets added or replaced, in the user's domain language
+- **What varies** — the one thing that differs between today's version and the next
+- **Source** — the human's answer, or the charter reference
+
+⚠️ **Record only the changes the human confirms.** Do not invent likely changes. An expected
+change makes the blueprint build an extension point, and an extension point nobody needs is
+complexity that every later change must work around.
+
+### Then, the technical picture
+
 Produce:
-- **Architecture Overview** — describe the system's major components and how they interact
-- **Component Breakdown** — list each component with its responsibility
+- **Architecture Overview** — describe the system's major components and how they interact. End it with the **Expected changes** table.
+- **Component Breakdown** — for each component: its one responsibility, the interface it exposes, the decision it hides from the rest of the system, and the data it owns. A component that reads another component's data goes through that component's interface.
 - **Data Flow** — how data/work moves through the system
-- **Integration Points** — external systems the solution connects to
+- **Integration Points** — external systems the solution connects to. **Each external system sits behind one component that owns it**, so a change of vendor or API version stays in that component.
+
+Each expected change lands inside one component when the boundaries are right. When a CH-N
+needs edits across three components, say so: the boundaries are probably wrong.
 
 Mark everything here as the charter author's **proposed** approach, not decided. Present and ask: "Anything to add to the technical picture? We'll evaluate technology choices next."
 
